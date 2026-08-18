@@ -8,7 +8,7 @@ const columns = [
       { href: "/", label: "Home" },
       { href: "/protocol", label: "The Protocol" },
       { href: "/sarah", label: "Sarah" },
-      { href: "/roadmap", label: "AI Roadmap" },
+      { href: "/roadmap", label: "The Engine" },
       { href: "/contact", label: "Contact" },
     ],
   },
@@ -17,7 +17,7 @@ const columns = [
     links: [
       { href: "/protocol", label: "Story first" },
       { href: "/protocol", label: "Design over template" },
-      { href: "/roadmap", label: "AI, on your side" },
+      { href: "/roadmap", label: "The engine, end to end" },
       { href: "/sarah", label: "Main-character outcomes" },
     ],
   },

@@ -165,6 +165,12 @@ export default function Sarah() {
             </div>
           </Reveal>
         </div>
+        <Reveal className="mt-6">
+          <p className="text-center font-mono text-[10px] uppercase tracking-[0.25em] text-fog-2">
+            Representative engagement — figures anonymized &amp; rounded. Real results vary by market
+            and timing.
+          </p>
+        </Reveal>
       </Section>
 
       <section className="relative overflow-hidden border-t border-line">

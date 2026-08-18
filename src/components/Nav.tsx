@@ -7,8 +7,9 @@ import { Mark } from "./ui";
 
 const links = [
   { href: "/protocol", label: "The Protocol" },
+  { href: "/#work", label: "Work" },
   { href: "/sarah", label: "Sarah" },
-  { href: "/roadmap", label: "AI Roadmap" },
+  { href: "/roadmap", label: "The Engine" },
   { href: "/contact", label: "Contact" },
 ];
 

@@ -22,29 +22,67 @@ const steps = [
     n: "01",
     title: "Read",
     body: "We find the story you've been underplaying — what you actually stand for, who you're for, and why you win.",
+    get: ["A positioning brief", "A competitor read", "Your story spine"],
   },
   {
     n: "02",
     title: "Cast",
     body: "We position you as the protagonist. The one person the audience has been waiting for.",
+    get: ["A voice you own", "A promise you can stand behind", "A differentiator with teeth"],
   },
   {
     n: "03",
     title: "Stage",
     body: "We design a stage worthy of that story. Custom, opinionated, unmistakably yours.",
+    get: ["A design system", "Page-by-page structure", "A living prototype"],
   },
   {
     n: "04",
     title: "Open",
     body: "We ship in days, not weeks. Fixed price. No hourly roulette, no scope drift.",
+    get: ["A live site", "Clean, portable code", "Docs + handover"],
+  },
+];
+
+/* ── Selected work — swap these entries for real client builds before production ── */
+const work = [
+  {
+    name: "NPC Protocol",
+    client: "Brand site + lead engine — the one you're on",
+    url: "npcprotocol.com",
+    tags: ["Next.js", "GSAP", "Tailwind"],
+    outcome: "Live · 2 weeks",
+    initial: "N",
+    accent: "gold" as const,
+    state: "live" as const,
+  },
+  {
+    name: "Easton Electrical",
+    client: "Local trades — services, areas, booking",
+    url: "eastonelectrical.example",
+    tags: ["Astro", "Static", "SEO"],
+    outcome: "Live · 1 week",
+    initial: "E",
+    accent: "npc" as const,
+    state: "live" as const,
+  },
+  {
+    name: "Next project",
+    client: "Slot open",
+    url: "",
+    tags: [],
+    outcome: "Slot open",
+    initial: "→",
+    accent: "gold" as const,
+    state: "open" as const,
   },
 ];
 
 const engine = [
-  { role: "Story & strategy", who: "The human lead", tone: "gold" as const },
-  { role: "Design system", who: "Co-pilot", tone: "gold" as const },
-  { role: "Build & motion", who: "Engine room", tone: "npc" as const },
-  { role: "Review & ship", who: "The human lead", tone: "gold" as const },
+  { role: "Web", who: "Capture", tone: "gold" as const },
+  { role: "Lead", who: "Intake", tone: "npc" as const },
+  { role: "Qualify", who: "AI scoring", tone: "npc" as const },
+  { role: "CRM", who: "Handoff", tone: "gold" as const },
 ];
 
 export default function Home() {
@@ -158,13 +196,127 @@ export default function Home() {
             <Reveal key={s.n} delay={i * 0.08} y={34}>
               <Tilt className="h-full">
                 <div className="group h-full rounded-2xl border border-line bg-panel p-6 transition-all duration-300 hover:border-gold/40">
-                  <div className="font-display text-4xl font-bold text-line-2 transition-colors duration-300 group-hover:text-gold">
+                  <div className="font-display text-5xl font-bold leading-none text-line-2 transition-colors duration-300 group-hover:text-gold">
                     {s.n}
                   </div>
-                  <h3 className="mt-5 font-display text-lg font-semibold text-snow">{s.title}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-fog">{s.body}</p>
+                  <h3 className="mt-5 font-display text-xl font-semibold text-snow">{s.title}</h3>
+                  <p className="mt-3 text-[15px] leading-relaxed text-fog">{s.body}</p>
+                  <div className="mt-5 flex flex-wrap gap-1.5">
+                    {s.get.map((g) => (
+                      <span
+                        key={g}
+                        className="inline-flex items-center rounded-full border border-gold/30 bg-gold/5 px-2.5 py-1 text-[11px] font-medium text-gold"
+                      >
+                        {g}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </Tilt>
+            </Reveal>
+          ))}
+        </div>
+      </Section>
+
+      <Divider className="mx-auto max-w-6xl" />
+
+      {/* ── Selected work ──────────────────────────────── */}
+      <Section id="work">
+        <Reveal>
+          <SectionHeading
+            eyebrow="Selected work"
+            title="Proof, not promises."
+            lede="Two builds already live — and one slot that's waiting for you. Real case studies land here as we ship."
+          />
+        </Reveal>
+
+        <div className="mt-14 grid gap-5 md:grid-cols-3">
+          {work.map((w, i) => (
+            <Reveal key={w.name} delay={i * 0.08} y={34} className="h-full">
+              {w.state === "open" ? (
+                <div className="flex h-full min-h-[420px] flex-col items-center justify-center rounded-2xl border border-dashed border-line-2 bg-panel/40 p-8 text-center">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-fog-2">
+                    Slot 03
+                  </span>
+                  <div className="my-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-line bg-panel">
+                    <span className="font-display text-3xl font-bold text-fog-2">→</span>
+                  </div>
+                  <h3 className="font-display text-xl font-semibold text-snow">Next project</h3>
+                  <p className="mt-2 max-w-[14rem] text-sm leading-relaxed text-fog">
+                    This slot is open. Your story goes here.
+                  </p>
+                  <div className="mt-6">
+                    <Button href="/contact" variant="ghost">
+                      Claim the slot <span aria-hidden>→</span>
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-panel transition-colors duration-300 hover:border-gold/40">
+                  {/* browser chrome */}
+                  <div className="flex items-center gap-1.5 border-b border-line bg-ink/70 px-4 py-2.5">
+                    <span className="h-2.5 w-2.5 rounded-full bg-line-2" />
+                    <span className="h-2.5 w-2.5 rounded-full bg-line-2" />
+                    <span className="h-2.5 w-2.5 rounded-full bg-line-2" />
+                    <span
+                      className={`ml-3 truncate rounded-full border px-3 py-0.5 font-mono text-[10px] tracking-wide ${
+                        w.accent === "gold"
+                          ? "border-gold/30 text-gold-soft"
+                          : "border-npc/30 text-npc-soft"
+                      }`}
+                    >
+                      {w.url}
+                    </span>
+                  </div>
+
+                  {/* mock viewport */}
+                  <div className="relative aspect-[4/3] overflow-hidden">
+                    <div className="absolute inset-0 bg-grid opacity-30" />
+                    <div
+                      className="absolute -right-16 -top-16 h-56 w-56 rounded-full blur-[70px]"
+                      style={{
+                        background: w.accent === "gold" ? "var(--color-gold)" : "var(--color-npc)",
+                        opacity: 0.28,
+                      }}
+                    />
+                    <div className="absolute inset-0 flex flex-col items-start justify-end p-6">
+                      <span className="font-mono text-[9px] uppercase tracking-[0.3em] text-fog-2">
+                        {w.client}
+                      </span>
+                      <span
+                        className={`font-display text-6xl font-bold leading-none ${
+                          w.accent === "gold" ? "text-gold" : "text-npc"
+                        }`}
+                      >
+                        {w.initial}
+                      </span>
+                      <div className="mt-4 w-3/4 space-y-2">
+                        <div className="h-1.5 w-full rounded-full bg-snow/25" />
+                        <div className="h-1.5 w-2/3 rounded-full bg-snow/15" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* meta */}
+                  <div className="flex flex-1 flex-col justify-between border-t border-line p-5">
+                    <h3 className="font-display text-lg font-semibold text-snow">{w.name}</h3>
+                    <div className="mt-4 flex flex-wrap items-center gap-1.5">
+                      {w.tags.map((t) => (
+                        <span
+                          key={t}
+                          className="rounded-full border border-line px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-fog"
+                        >
+                          {t}
+                        </span>
+                      ))}
+                      <span className="ml-auto inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-gold">
+                        <span className="h-1.5 w-1.5 rounded-full bg-gold" />
+                        {w.outcome}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </Reveal>
           ))}
         </div>
@@ -234,25 +386,32 @@ export default function Home() {
                 </div>
               </Reveal>
             </div>
+            <p className="mt-4 text-center font-mono text-[10px] uppercase tracking-[0.25em] text-fog-2 sm:text-left">
+              Representative engagement — figures anonymized &amp; rounded
+            </p>
           </div>
         </div>
       </Section>
 
       <Divider className="mx-auto max-w-6xl" />
 
-      {/* ── AI Roadmap teaser ──────────────────────────── */}
+      {/* ── Integrated AI — the engine ─────────────────── */}
       <Section id="roadmap">
         <div className="grid items-end gap-10 lg:grid-cols-[1.1fr_0.9fr]">
           <Reveal>
             <SectionHeading
-              eyebrow="The engine"
+              eyebrow="Integrated AI"
               eyebrowTone="npc"
-              title="AI on your side of the table."
-              lede="We use modern AI to move fast — draft, iterate, build — but you stay the protagonist. AI is the crew, not the captain. Here's exactly how it fits."
+              title={
+                <>
+                  Not just a site. A <span className="text-gold text-glow-gold">full lead engine</span>.
+                </>
+              }
+              lede="The website is the front of the system: it captures your leads, AI qualifies them, and the good ones land in your CRM already sorted. One engine — web to pipeline."
             />
             <div className="mt-8 shrink-0">
               <Button href="/roadmap" variant="ghost">
-                See the AI roadmap <span aria-hidden>→</span>
+                See how the engine runs <span aria-hidden>→</span>
               </Button>
             </div>
           </Reveal>
@@ -264,11 +423,14 @@ export default function Home() {
                   key={e.role}
                   className="flex items-center justify-between gap-4 rounded-2xl px-5 py-4 transition-colors duration-300 hover:bg-panel-2"
                 >
-                  <span className="text-sm font-medium text-snow">{e.role}</span>
+                  <span className="text-sm font-semibold text-snow">{e.role}</span>
                   <Tag tone={e.tone}>{e.who}</Tag>
                 </div>
               ))}
             </div>
+            <p className="mt-3 px-5 text-center font-mono text-[10px] uppercase tracking-[0.25em] text-fog-2">
+              Web → Lead → Qualification → CRM
+            </p>
           </Reveal>
         </div>
       </Section>
@@ -292,8 +454,8 @@ export default function Home() {
               Ready to stop being a <span className="text-npc text-glow-npc">background character</span>?
             </h2>
             <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-fog sm:text-lg">
-              Tell me what you do. I'll tell you why nobody remembers it — and what the main-character
-              version looks like.
+              Tell me what you do — and let's build the main-character version together. I bring the
+              system, you bring the story.
             </p>
             <div className="mt-10 flex flex-wrap justify-center gap-3">
               <Magnetic strength={0.25}>

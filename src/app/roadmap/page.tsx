@@ -3,6 +3,42 @@ import { Section, Button, Eyebrow, Divider, Tag } from "@/components/ui";
 import { Reveal, Magnetic } from "@/components/motion";
 import { Band } from "@/components/media";
 
+/* ── The engine pipeline: Web → Lead → Qualification → CRM ───────────── */
+const pipeline = [
+  {
+    n: "01",
+    stage: "Web",
+    role: "Capture",
+    tone: "gold" as const,
+    body: "A site people remember — and every button, form, and message is a deliberate capture point.",
+    points: ["Distinct, fast, story-driven", "Capture wired in, not bolted on"],
+  },
+  {
+    n: "02",
+    stage: "Lead",
+    role: "Intake",
+    tone: "npc" as const,
+    body: "Every inquiry — form, email, chat — lands in one place, normalized and timestamped.",
+    points: ["One inbox, zero lost leads", "Who, what, budget, timeline — captured"],
+  },
+  {
+    n: "03",
+    stage: "Qualify",
+    role: "AI scoring",
+    tone: "npc" as const,
+    body: "AI reads intent, scores each lead against your ideal client, and drafts the reply — for your review.",
+    points: ["Hot leads surface first", "Draft replies, human sign-off"],
+  },
+  {
+    n: "04",
+    stage: "CRM",
+    role: "Handoff",
+    tone: "gold" as const,
+    body: "Qualified leads land in your CRM — tagged, sorted, with the context to act on them.",
+    points: ["Ready to close, not ready to sort", "You know who to call and why"],
+  },
+];
+
 const stack = [
   {
     name: "Story & strategy",
@@ -41,37 +77,86 @@ const honest = [
   },
   {
     title: "You're never locked in",
-    body: "The site is yours — clean, portable code with no platform dependency. The tools change; your asset stays.",
+    body: "The site and the pipeline are yours — clean, portable, no platform dependency. The tools change; your asset stays.",
   },
-];
-
-const pipeline = [
-  ["Understand", "What you do, who it's for, and what 'distinct' means for you."],
-  ["Design", "A system built around that — not a theme with your logo on it."],
-  ["Build", "AI-assisted, human-reviewed. Fast, but not reckless."],
-  ["Ship", "Live, owned by you, ready to grow."],
 ];
 
 export default function Roadmap() {
   return (
     <>
       <PageHero
-        eyebrow="The AI Roadmap"
+        eyebrow="Integrated AI"
         eyebrowTone="npc"
         title={
           <>
-            Where AI earns its keep — and where <span className="text-gold text-glow-gold">you</span> stay in control.
+            One engine: from <span className="text-gold text-glow-gold">first visit</span> to qualified
+            lead.
           </>
         }
-        lede="AI is how I move fast without cutting corners. But the story, the taste, and the accountability are always human. Here's exactly where the two meet."
+        lede="The site you get isn't a brochure — it's the front of a system that captures leads, qualifies them with AI, and hands you ready-to-close ones. You stay the captain."
       />
 
+      {/* ── The pipeline ───────────────────────────────── */}
+      <Section id="pipeline">
+        <Reveal>
+          <div className="mb-12">
+            <Eyebrow tone="npc">The pipeline</Eyebrow>
+            <h2 className="mt-5 max-w-2xl font-display text-3xl font-bold leading-tight text-snow sm:text-4xl">
+              Four stages, end to end.
+            </h2>
+          </div>
+        </Reveal>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {pipeline.map((p, i) => (
+            <Reveal key={p.stage} delay={i * 0.07} y={30}>
+              <div className="relative h-full rounded-2xl border border-line bg-panel p-6 transition-colors duration-300 hover:border-gold/40">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="font-display text-4xl font-bold text-line-2">{p.n}</span>
+                  <Tag tone={p.tone}>{p.role}</Tag>
+                </div>
+                <h3 className="mt-4 font-display text-xl font-bold text-snow">{p.stage}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-fog">{p.body}</p>
+                <ul className="mt-4 space-y-2">
+                  {p.points.map((pt) => (
+                    <li key={pt} className="flex items-start gap-2 text-[13px] leading-snug text-fog">
+                      <span className="mt-1 h-1.5 w-1.5 shrink-0 rotate-45 bg-gold/70" />
+                      {pt}
+                    </li>
+                  ))}
+                </ul>
+                {i < pipeline.length - 1 && (
+                  <span
+                    aria-hidden
+                    className="absolute right-[-14px] top-1/2 hidden -translate-y-1/2 text-fog-2 lg:block"
+                  >
+                    →
+                  </span>
+                )}
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </Section>
+
+      {/* ── Cinematic band ─────────────────────────────── */}
+      <Band
+        src="/images/engine.jpg"
+        alt=""
+        quote={
+          <>
+            AI runs the engine. <span className="text-gold text-glow-gold">You run the business.</span>
+          </>
+        }
+        sub="The split behind every build"
+      />
+
+      {/* ── Building the engine ────────────────────────── */}
       <Section>
         <Reveal>
           <div className="mb-12">
-            <Eyebrow tone="npc">The division of labor</Eyebrow>
+            <Eyebrow tone="gold">Building the engine</Eyebrow>
             <h2 className="mt-5 max-w-2xl font-display text-3xl font-bold leading-tight text-snow sm:text-4xl">
-              Every step knows who's driving.
+              Every build step knows who's driving.
             </h2>
           </div>
         </Reveal>
@@ -93,18 +178,6 @@ export default function Roadmap() {
           ))}
         </div>
       </Section>
-
-      {/* ── Cinematic band ─────────────────────────────── */}
-      <Band
-        src="/images/engine.jpg"
-        alt=""
-        quote={
-          <>
-            AI accelerates. <span className="text-gold text-glow-gold">You decide.</span>
-          </>
-        }
-        sub="The split behind every build"
-      />
 
       <Section id="honest">
         <Reveal>
@@ -130,36 +203,6 @@ export default function Roadmap() {
 
       <Divider className="mx-auto max-w-6xl" />
 
-      <Section id="pipeline">
-        <Reveal>
-          <div className="mb-12">
-            <Eyebrow tone="npc">The pipeline</Eyebrow>
-            <h2 className="mt-5 max-w-2xl font-display text-3xl font-bold leading-tight text-snow sm:text-4xl">
-              Four beats, start to ship.
-            </h2>
-          </div>
-        </Reveal>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {pipeline.map(([title, body], i) => (
-            <Reveal key={title} delay={i * 0.07} y={30}>
-              <div className="relative h-full rounded-2xl border border-line bg-panel p-6 transition-colors duration-300 hover:border-npc/40">
-                <span className="font-display text-4xl font-bold text-line-2">0{i + 1}</span>
-                <h3 className="mt-3 font-display text-lg font-semibold text-snow">{title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-fog">{body}</p>
-                {i < pipeline.length - 1 && (
-                  <span
-                    aria-hidden
-                    className="absolute right-[-14px] top-1/2 hidden -translate-y-1/2 text-fog-2 lg:block"
-                  >
-                    →
-                  </span>
-                )}
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </Section>
-
       <section className="relative overflow-hidden border-t border-line">
         <div
           data-parallax="0.25"
@@ -169,7 +212,7 @@ export default function Roadmap() {
         <Section className="py-24 text-center">
           <Reveal className="mx-auto max-w-2xl">
             <h2 className="font-display text-3xl font-bold leading-tight text-snow sm:text-4xl">
-              Fast because of AI. Distinct because of you.
+              Fast because of AI. Yours because it's your system.
             </h2>
             <p className="mx-auto mt-5 max-w-xl text-fog">
               That's the whole deal. Let's put it to work on your story.

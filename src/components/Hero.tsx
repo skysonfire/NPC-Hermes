@@ -151,7 +151,12 @@ export default function Hero() {
             </span>
           </h1>
 
-          <p data-hero className="mt-6 max-w-xl text-base leading-relaxed text-fog sm:text-lg">{c.lede}</p>
+          <p data-hero className="mt-6 max-w-xl font-display text-lg font-semibold leading-snug text-snow sm:text-xl">
+            Fixed-price, story-driven websites — live in days, and wired to turn visitors into
+            qualified leads.
+          </p>
+
+          <p data-hero className="mt-4 max-w-xl text-base leading-relaxed text-fog sm:text-lg">{c.lede}</p>
 
           <div data-hero className="mt-9 flex flex-wrap items-center gap-3">
             <Magnetic strength={0.22}>
