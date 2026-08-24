@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NPC Protocol · GEO/AEO Business-Model Add-On</title>
+<style>
+  :root{
+    --ink:#0a0a13; --panel:#14131f; --panel-2:#1d1b2c;
+    --line:#2a2840; --line-2:#3a375a;
+    --snow:#ededf6; --fog:#928fae; --fog-2:#6f6c92;
+    --gold:#ff8a5c; --gold-soft:#ffb494; --gold-dim:#7a4a2e;
+    --npc:#56b6ff;  --npc-soft:#9bd4ff; --npc-dim:#235a8c;
+    --danger:#ff5470; --ok:#5ce6a0;
+    --sans:"Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    --mono:"JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    color-scheme: dark;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--ink); color:var(--snow); font-family:var(--sans);
+    line-height:1.55; -webkit-font-smoothing:antialiased;
+    background-image:
+      radial-gradient(1200px 600px at 80% -10%, rgba(255,138,92,0.06), transparent 60%),
+      radial-gradient(1000px 500px at 0% 0%, rgba(86,182,255,0.05), transparent 55%);
+    background-attachment:fixed;
+  }
+  .wrap{max-width:1180px; margin:0 auto; padding:40px 24px 96px;}
+  .mono{font-family:var(--mono); font-variant-numeric:tabular-nums;}
+  h1,h2,h3{font-weight:600; letter-spacing:-0.02em; color:var(--snow);}
+  a{color:var(--npc); text-decoration:none;}
+  p{color:var(--fog);}
+
+  /* header */
+  header{display:flex; align-items:flex-end; justify-content:space-between; gap:24px; flex-wrap:wrap;
+    border-bottom:1px solid var(--line); padding-bottom:24px; margin-bottom:30px;}
+  .brand{display:flex; align-items:center; gap:14px;}
+  .logo{width:46px; height:46px; border-radius:12px; flex:none;
+    background:conic-gradient(from 210deg, var(--gold), var(--npc), var(--gold));
+    box-shadow:0 0 0 1px rgba(255,255,255,0.06), 0 10px 30px rgba(0,0,0,0.5);
+    display:grid; place-items:center; font-weight:800; color:var(--ink); font-size:18px;}
+  .eyebrow{font-size:12px; letter-spacing:0.14em; text-transform:uppercase; color:var(--fog); font-weight:600;}
+  h1{font-size:26px; margin-top:4px;}
+  h1 .hl{color:var(--gold);}
+  .meta{text-align:right; font-size:12.5px; color:var(--fog); line-height:1.7;}
+  .meta b{color:var(--snow); font-weight:600;}
+  .meta .dot{display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--gold); margin-right:6px; box-shadow:0 0 8px var(--gold);}
+  .status{display:inline-block; margin-top:6px; font-size:10.5px; font-weight:700; letter-spacing:0.08em;
+    padding:4px 10px; border-radius:20px; text-transform:uppercase;
+    background:rgba(255,138,92,0.14); color:var(--gold); border:1px solid rgba(255,138,92,0.4);}
+
+  section{margin-bottom:48px;}
+  .sec-head{display:flex; align-items:baseline; gap:12px; margin-bottom:18px; flex-wrap:wrap;}
+  .sec-head .idx{font-family:var(--mono); font-size:12px; color:var(--gold); letter-spacing:0.1em;}
+  .sec-head h2{font-size:20px;}
+  .sec-head .sub{color:var(--fog); font-size:13px; width:100%;}
+
+  .lede{font-size:16.5px; color:var(--snow); max-width:820px; line-height:1.6;}
+  .lede b{color:var(--gold-soft); font-weight:600;}
+  .callout{background:linear-gradient(90deg, rgba(255,138,92,0.08), rgba(86,182,255,0.06));
+    border:1px solid var(--line-2); border-left:3px solid var(--gold);
+    border-radius:12px; padding:18px 20px; margin:20px 0;}
+  .callout .t{font-size:12px; text-transform:uppercase; letter-spacing:0.1em; color:var(--gold); font-weight:700; margin-bottom:6px;}
+  .callout p{color:var(--snow); font-size:14.5px;}
+
+  /* stat chips */
+  .chips{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px;}
+  .chip{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:18px; position:relative; overflow:hidden;}
+  .chip .k{font-size:11.5px; color:var(--fog); text-transform:uppercase; letter-spacing:0.07em; font-weight:600;}
+  .chip .v{font-size:27px; font-weight:700; margin-top:8px; font-family:var(--mono);}
+  .chip .d{font-size:12px; color:var(--fog); margin-top:6px; line-height:1.45;}
+  .chip .tag{position:absolute; top:14px; right:14px; font-size:10px; font-weight:700; letter-spacing:0.06em; padding:3px 8px; border-radius:20px; text-transform:uppercase;}
+  .tag.rec{background:rgba(255,138,92,0.14); color:var(--gold); border:1px solid rgba(255,138,92,0.4);}
+  .tag.warn{background:rgba(255,84,112,0.12); color:var(--danger); border:1px solid rgba(255,84,112,0.35);}
+  .tag.alt{background:rgba(86,182,255,0.12); color:var(--npc); border:1px solid rgba(86,182,255,0.35);}
+  .tag.ok{background:rgba(92,230,160,0.12); color:var(--ok); border:1px solid rgba(92,230,160,0.35);}
+  .chip.rec{border-color:rgba(255,138,92,0.35);}
+
+  /* offer stack */
+  .offer{background:var(--panel); border:1px solid var(--line); border-radius:16px; overflow:hidden;}
+  .offer-row{display:grid; grid-template-columns:34px 1fr auto auto; align-items:center; gap:16px; padding:16px 20px; border-bottom:1px solid var(--line);}
+  .offer-row:last-child{border-bottom:none;}
+  .offer-row .n{font-family:var(--mono); color:var(--fog-2); font-size:13px;}
+  .offer-row .name{font-weight:600; font-size:15px;}
+  .offer-row .name span{display:block; font-weight:400; color:var(--fog); font-size:12.5px; margin-top:2px;}
+  .offer-row .type{font-size:11px; color:var(--fog); text-transform:uppercase; letter-spacing:0.05em; text-align:right; min-width:104px;}
+  .offer-row .price{font-family:var(--mono); font-size:15px; font-weight:600; color:var(--gold-soft); text-align:right; min-width:120px;}
+  .offer-row.bundle{background:linear-gradient(90deg, rgba(255,138,92,0.07), rgba(86,182,255,0.07));}
+  .offer-row.bundle .name{color:var(--gold);}
+  .offer-row.bundle .price{color:var(--npc);}
+  .offer-row.new .name::after{content:"NEW"; font-size:9px; font-weight:800; letter-spacing:0.1em; color:var(--ink); background:var(--gold); padding:2px 6px; border-radius:4px; margin-left:8px; vertical-align:middle;}
+
+  /* generic table */
+  table.tbl{width:100%; border-collapse:collapse; font-size:13.5px; background:var(--panel); border:1px solid var(--line); border-radius:14px; overflow:hidden;}
+  table.tbl th{background:var(--panel-2); text-align:left; font-weight:600; color:var(--fog); text-transform:uppercase; font-size:10.5px; letter-spacing:0.06em; padding:12px 14px; border-bottom:1px solid var(--line);}
+  table.tbl td{padding:13px 14px; border-bottom:1px solid var(--line); vertical-align:top;}
+  table.tbl tr:last-child td{border-bottom:none;}
+  table.tbl td.num{font-family:var(--mono); text-align:right; white-space:nowrap;}
+  table.tbl .em{color:var(--gold-soft); font-weight:600;}
+  table.tbl .em-b{color:var(--npc-soft); font-weight:600;}
+  table.tbl tr.tot td{background:var(--panel-2); font-weight:600;}
+  .tier{display:inline-block; font-size:10px; font-weight:700; letter-spacing:0.06em; padding:3px 8px; border-radius:20px; text-transform:uppercase; white-space:nowrap;}
+  .tier.primary{background:rgba(255,138,92,0.14); color:var(--gold); border:1px solid rgba(255,138,92,0.4);}
+  .tier.covered{background:rgba(86,182,255,0.12); color:var(--npc); border:1px solid rgba(86,182,255,0.35);}
+  .tier.partial{background:rgba(146,143,174,0.14); color:var(--fog); border:1px solid rgba(146,143,174,0.3);}
+
+  /* two-col */
+  .two{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  @media(max-width:760px){.two{grid-template-columns:1fr;}}
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:18px 20px;}
+  .card h3{font-size:14.5px; margin-bottom:10px; display:flex; align-items:center; gap:8px;}
+  .card .ic{width:8px; height:8px; border-radius:50%; flex:none;}
+  .card ul{list-style:none;}
+  .card li{padding:7px 0; border-bottom:1px solid var(--line); font-size:13.5px; color:var(--fog); display:flex; gap:10px;}
+  .card li:last-child{border-bottom:none;}
+  .card li b{color:var(--snow); font-weight:600;}
+  .card li .mk{color:var(--gold); font-family:var(--mono); flex:none;}
+  .card li .mk.b{color:var(--npc);}
+  .card li .mk.d{color:var(--danger);}
+
+  /* pipeline */
+  .pipe{display:grid; gap:10px;}
+  .step{display:grid; grid-template-columns:44px 1fr; gap:16px; align-items:start; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px 18px;}
+  .step .no{width:40px; height:40px; border-radius:10px; display:grid; place-items:center; font-family:var(--mono); font-weight:700; font-size:16px;
+    background:rgba(255,138,92,0.12); color:var(--gold); border:1px solid rgba(255,138,92,0.3);}
+  .step .no.b{background:rgba(86,182,255,0.12); color:var(--npc); border-color:rgba(86,182,255,0.3);}
+  .step .body h4{font-size:14.5px; margin-bottom:4px;}
+  .step .body p{font-size:13px; color:var(--fog);}
+  .step .body .art{display:inline-block; margin-top:8px; font-family:var(--mono); font-size:11px; color:var(--npc); background:rgba(86,182,255,0.08); border:1px solid rgba(86,182,255,0.25); padding:3px 9px; border-radius:6px;}
+
+  /* risk grid */
+  .risks{display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:14px;}
+  .risk{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:16px 18px; position:relative;}
+  .risk .sev{font-size:10px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; padding:3px 9px; border-radius:20px; display:inline-block; margin-bottom:10px;}
+  .sev.high{background:rgba(255,84,112,0.12); color:var(--danger); border:1px solid rgba(255,84,112,0.35);}
+  .sev.med{background:rgba(255,138,92,0.12); color:var(--gold); border:1px solid rgba(255,138,92,0.35);}
+  .sev.low{background:rgba(92,230,160,0.1); color:var(--ok); border:1px solid rgba(92,230,160,0.3);}
+  .risk h4{font-size:14px; margin-bottom:6px;}
+  .risk p{font-size:12.8px; color:var(--fog);}
+  .risk .mit{margin-top:10px; padding-top:10px; border-top:1px solid var(--line); font-size:12.5px; color:var(--snow);}
+  .risk .mit b{color:var(--gold-soft); font-weight:600;}
+
+  /* delivery-failure deep dive */
+  .df{background:linear-gradient(160deg, rgba(255,84,112,0.06), var(--panel)); border:1px solid rgba(255,84,112,0.3); border-radius:16px; padding:24px; margin-top:14px;}
+  .df h3{font-size:16px; color:var(--danger); margin-bottom:12px; display:flex; align-items:center; gap:10px;}
+  .df .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; margin-top:6px;}
+  .df .blk h5{font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:var(--fog); margin-bottom:8px;}
+  .df .blk ul{list-style:none;}
+  .df .blk li{font-size:13px; color:var(--fog); padding:5px 0; border-bottom:1px solid rgba(42,40,64,0.6);}
+  .df .blk li:last-child{border-bottom:none;}
+  .df .blk li b{color:var(--snow); font-weight:600;}
+  .kill{margin-top:18px; background:rgba(255,84,112,0.06); border:1px dashed rgba(255,84,112,0.4); border-radius:12px; padding:14px 16px;}
+  .kill h5{font-size:12px; text-transform:uppercase; letter-spacing:0.08em; color:var(--danger); margin-bottom:8px;}
+  .kill ul{list-style:none;}
+  .kill li{font-size:13px; color:var(--fog); padding:4px 0 4px 18px; position:relative;}
+  .kill li::before{content:"✕"; position:absolute; left:0; color:var(--danger); font-size:11px;}
+
+  /* next steps */
+  .steps-final{display:grid; gap:10px; counter-reset:ns;}
+  .ns{display:grid; grid-template-columns:34px 1fr; gap:14px; align-items:center; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:14px 18px; counter-increment:ns;}
+  .ns .c{font-family:var(--mono); font-size:15px; font-weight:700; color:var(--npc);}
+  .ns .c::before{content:""; }
+  .ns p{font-size:13.5px; color:var(--fog);}
+  .ns p b{color:var(--snow); font-weight:600;}
+
+  footer{border-top:1px solid var(--line); padding-top:22px; margin-top:20px; font-size:12px; color:var(--fog-2); display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;}
+  .legend{display:flex; gap:16px; flex-wrap:wrap; font-size:11.5px; color:var(--fog); margin-top:14px;}
+  .legend span{display:inline-flex; align-items:center; gap:6px;}
+  .legend .sw{width:10px; height:10px; border-radius:3px; display:inline-block;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <header>
+    <div class="brand">
+      <div class="logo">NPC</div>
+      <div>
+        <div class="eyebrow">NPC Protocol · Internal Strategy</div>
+        <h1>GEO / AEO — <span class="hl">Business-Model Add-On</span></h1>
+      </div>
+    </div>
+    <div class="meta">
+      <span class="dot"></span><b>Proposal</b> — add-on to existing offer stack<br/>
+      Date: <b>24 Aug 2026</b> · Point-in-time (re-date prices before quoting)<br/>
+      <span class="status">Internal · Not client-facing</span>
+    </div>
+  </header>
+
+  <!-- CHIPS -->
+  <div class="chips" style="margin-bottom:48px;">
+    <div class="chip"><span class="tag alt">Ahrefs</span><div class="k">Conversion on AI slice</div><div class="v">~23×</div><div class="d">AI = ~0.5% of traffic but ~12.1% of signups</div></div>
+    <div class="chip"><div class="k">Honest AI traffic share</div><div class="v">~1%</div><div class="d">Sell intent + trajectory, never volume</div></div>
+    <div class="chip rec"><span class="tag rec">Lead</span><div class="k">Audit (one-time)</div><div class="v">$2.5k</div><div class="d">Range $1.5–5k · the closer</div></div>
+    <div class="chip rec"><span class="tag rec">Recurring</span><div class="k">Local GEO Retainer</div><div class="v">$3k/mo</div><div class="d">Range $1.5–5k/mo</div></div>
+    <div class="chip"><span class="tag ok">Margin</span><div class="k">Gross margin (lean delivery)</div><div class="v">~78%</div><div class="d">Cash COGS ~$500–650/mo vs $3k</div></div>
+    <div class="chip"><span class="tag alt">Engines</span><div class="k">Primary engines covered</div><div class="v">5</div><div class="d">ChatGPT · Gemini · Perplexity · Copilot · AI Overviews</div></div>
+  </div>
+
+  <!-- 01 THE PITCH -->
+  <section>
+    <div class="sec-head"><span class="idx">01</span><h2>The pitch in one line</h2>
+      <span class="sub">Why this belongs in the NPC Protocol offer stack now.</span></div>
+    <p class="lede">The unit of competition changed from a <b>RANK</b> (the blue link) to a <b>CITATION</b> — being
+    <i>named inside the AI's answer</i>. SEO gets a business on stage; GEO/AEO makes them the script the speaker reads.
+    NPC Protocol already sells "full AI presence" (site + voice agent). GEO/AEO is the missing third leg:
+    <b>we get you recommended in ChatGPT / Perplexity / Google AI Overviews.</b></p>
+
+    <div class="callout">
+      <div class="t">Why it fits NPC specifically</div>
+      <p>The SEO/AEO agencies don't offer the phone agent, and the voice agencies don't do AI visibility.
+      Bundling <b>site + voice + GEO</b> under one vendor is a moat the point solutions can't match.
+      It also converts our existing website-build clients into recurring GEO retainers — the highest-leverage upsell we have.</p>
+    </div>
+
+    <div class="two" style="margin-top:16px;">
+      <div class="card">
+        <h3><span class="ic" style="background:var(--gold)"></span>Why now (dated proof)</h3>
+        <ul>
+          <li><span class="mk">›</span><span><b>Ahrefs:</b> AI traffic is tiny but ~23× conversion on that slice.</span></li>
+          <li><span class="mk">›</span><span><b>HubSpot:</b> buyers found via AI ~3× likelier to convert.</span></li>
+          <li><span class="mk">›</span><span><b>Search Atlas:</b> ~5.5× on the AI slice.</span></li>
+          <li><span class="mk d">›</span><span><b>Baseline:</b> still ~1% of all web traffic — don't oversell volume.</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3><span class="ic" style="background:var(--npc)"></span>The urgency hook (killer sales move)</h3>
+        <ul>
+          <li><span class="mk b">›</span><span><b>Competitive benchmark:</b> show the client their AI visibility side-by-side with a named rival.</span></li>
+          <li><span class="mk b">›</span><span>"Your competitor is already recommended in ChatGPT. You aren't."</span></li>
+          <li><span class="mk b">›</span><span>Concrete, undeniable, and it makes the audit an easy yes.</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 OFFER LADDER -->
+  <section>
+    <div class="sec-head"><span class="idx">02</span><h2>The productized add-on ladder</h2>
+      <span class="sub">Lead → recurring → differentiator → bundle. GEO slots in as add-on #3 and completes the moat.</span></div>
+    <div class="offer">
+      <div class="offer-row"><div class="n">1</div><div class="name">Website Build<span>Fixed-price, productized template (existing)</span></div><div class="type">One-time</div><div class="price">$2–3.5k</div></div>
+      <div class="offer-row"><div class="n">2</div><div class="name">AI Voice / Receptionist Agent<span>Bland, one tested template + config (existing)</span></div><div class="type">Recurring</div><div class="price">$99–299/mo</div></div>
+      <div class="offer-row new"><div class="n">3</div><div class="name">GEO/AEO — AI Search Visibility<span>NEW · Audit → Local GEO Retainer → content-at-scale</span></div><div class="type">Lead + Recurring</div><div class="price">see 03</div></div>
+      <div class="offer-row bundle"><div class="n">★</div><div class="name">Full AI Presence Bundle<span>Site + voice agent + GEO retainer, one vendor, one invoice</span></div><div class="type">Bundle · Moat</div><div class="price">custom</div></div>
+    </div>
+    <div class="chips" style="margin-top:16px;">
+      <div class="chip rec"><span class="tag rec">Lead product</span><div class="k">"Is your business invisible to AI?"</div><div class="v">$2.5k</div><div class="d">One-time audit. Cheap enough to say yes, credible enough to matter. The closer.</div></div>
+      <div class="chip rec"><span class="tag rec">Recurring</span><div class="k">Local GEO Retainer</div><div class="v">$3k/mo</div><div class="d">GBP + reviews + local listicles + mentions + Bing/AI-crawler fixes + monthly AI-visibility report.</div></div>
+      <div class="chip"><span class="tag alt">Bolt-on</span><div class="k">Existing SEO/website retainer</div><div class="v">+15–40%</div><div class="d">Add GEO as an uplift on any current retainer (staged rollout).</div></div>
+      <div class="chip"><span class="tag ok">Differentiator</span><div class="k">AI content-at-scale</div><div class="v">bulk</div><div class="d">Listicles + mentions in volume — what a 1-person local SEO shop can't match.</div></div>
+    </div>
+  </section>
+
+  <!-- 03 COST & MARGIN -->
+  <section>
+    <div class="sec-head"><span class="idx">03</span><h2>Costs &amp; margin (per client, per month)</h2>
+      <span class="sub">This is knowledge work, not a pass-through of expensive vendor costs — so margin stays high if we deliver lean.</span></div>
+    <table class="tbl">
+      <thead><tr><th>Cost line</th><th>Lean (in-house, AI-assisted)</th><th>Outsourced (buy placements)</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>AI-visibility monitoring (SaaS)</td><td class="num em">$150</td><td class="num em-b">$300</td><td>Peec AI / Profound / in-house scraper · prorated across clients</td></tr>
+        <tr><td>Content (listicles / mentions)</td><td class="num em">$200</td><td class="num em-b">$500–800</td><td>2–4 assets/mo · AI-assisted drafting in-house</td></tr>
+        <tr><td>Brand placements (Reddit / press / guest)</td><td class="num em">$150–300</td><td class="num em-b">$500–800</td><td>Marketplace floor $99–$600/item · 2–3 items/mo</td></tr>
+        <tr><td>Technical (robots.txt / schema / Bing)</td><td class="num">2–4h</td><td class="num">2–4h</td><td>Heavier at onboarding, light after</td></tr>
+        <tr><td>Reporting (monthly AI-visibility)</td><td class="num">2–3h</td><td class="num">2–3h</td><td>The proof artifact — never skip</td></tr>
+        <tr class="tot"><td>Total cash COGS</td><td class="num em">~$500–650/mo</td><td class="num em-b">~$1,300–1,900/mo</td><td>Rest is labor, not cash</td></tr>
+        <tr class="tot"><td>Revenue (Local GEO Retainer)</td><td class="num em">$3,000/mo</td><td class="num em-b">$3,000/mo</td><td>—</td></tr>
+        <tr class="tot"><td>Gross margin</td><td class="num em">~78–83%</td><td class="num em-b">~37–57%</td><td>Default to lean; outsource only placements</td></tr>
+      </tbody>
+    </table>
+
+    <div class="two" style="margin-top:16px;">
+      <div class="card">
+        <h3><span class="ic" style="background:var(--gold)"></span>One-time audit economics</h3>
+        <ul>
+          <li><span class="mk">›</span><span><b>COGS:</b> ~1–2 days work (engine baseline, crawl, robots/technical, gap analysis).</span></li>
+          <li><span class="mk">›</span><span><b>Price:</b> $2.5k (range $1.5–5k). Labor-only → very high margin.</span></li>
+          <li><span class="mk">›</span><span><b>Strategic value:</b> it's the closer and it's genuinely paid — you don't work it free.</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3><span class="ic" style="background:var(--npc)"></span>Pricing rules (held up across sources)</h3>
+        <ul>
+          <li><span class="mk b">›</span><span>Price on <b>business value</b>, not tool cost (3–5× markup, not a ~15% pass-through).</span></li>
+          <li><span class="mk b">›</span><span>Be <b>specific on scope</b>: which prompts, which engines, how often.</span></li>
+          <li><span class="mk b">›</span><span><b>Avoid cheap pilots</b> — if you must, run at 60–70% of full rate.</span></li>
+          <li><span class="mk d">›</span><span>Never quote the marketplace floor ($19 audits) as your price — it caps perceived value.</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 WHICH LLMs -->
+  <section>
+    <div class="sec-head"><span class="idx">04</span><h2>Which LLMs / AI engines we cover</h2>
+      <span class="sub">We don't optimize "a model" — we optimize the <b>sources each engine pulls from</b>. Two data layers drive the speed.</span></div>
+    <table class="tbl">
+      <thead><tr><th>Engine</th><th>Vendor</th><th>Layer we optimize</th><th>Time-to-move</th><th>Coverage</th></tr></thead>
+      <tbody>
+        <tr><td><b>ChatGPT</b></td><td>OpenAI</td><td>RAG (Bing index) + base corpus</td><td class="num">RAG: wks–mo</td><td><span class="tier primary">Primary</span></td></tr>
+        <tr><td><b>Google AI Overviews</b></td><td>Google</td><td>RAG (Google index) + base</td><td class="num">RAG: wks–mo</td><td><span class="tier primary">Primary</span></td></tr>
+        <tr><td><b>Gemini</b></td><td>Google</td><td>RAG (Google index) + base</td><td class="num">RAG: wks–mo</td><td><span class="tier primary">Primary</span></td></tr>
+        <tr><td><b>Perplexity</b></td><td>Perplexity</td><td>RAG (Bing + Google + direct)</td><td class="num">RAG: wks–mo</td><td><span class="tier primary">Primary</span></td></tr>
+        <tr><td><b>Microsoft Copilot</b></td><td>Microsoft</td><td>RAG (Bing index)</td><td class="num">RAG: wks–mo</td><td><span class="tier covered">Covered (via Bing)</span></td></tr>
+        <tr><td><b>Claude</b></td><td>Anthropic</td><td>Base corpus + web search</td><td class="num">Corpus: 6–12 mo</td><td><span class="tier partial">Partial</span></td></tr>
+        <tr><td><b>Grok</b></td><td>xAI</td><td>X + web corpus</td><td class="num">Corpus: 6–12 mo</td><td><span class="tier partial">Partial</span></td></tr>
+      </tbody>
+    </table>
+
+    <div class="two" style="margin-top:16px;">
+      <div class="card">
+        <h3><span class="ic" style="background:var(--gold)"></span>Layer 1 — RAG (fast, the promise)</h3>
+        <ul>
+          <li><span class="mk">›</span><span>Engines retrieve from a <b>live search index</b> at query time.</span></li>
+          <li><span class="mk">›</span><span>ChatGPT &amp; Copilot pull from <b>Bing</b>; Gemini &amp; AI Overviews from <b>Google</b>; Perplexity from both + direct.</span></li>
+          <li><span class="mk">›</span><span><b>Winning Bing + Google indexes covers 5 engines at once.</b> This is what we sell a 60–90 day result on.</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3><span class="ic" style="background:var(--npc)"></span>Layer 2 — base-model corpus (slow, the bonus)</h3>
+        <ul>
+          <li><span class="mk b">›</span><span>Trained on snapshot data; shifts in <b>6–12 months</b>, can't be forced.</span></li>
+          <li><span class="mk b">›</span><span>Claude, GPT base weights, Grok live here. Treat as upside, not a promise.</span></li>
+          <li><span class="mk b">›</span><span><b>Query fan-out:</b> optimize the whole semantic cluster, not one phrase.</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 HOW TO DELIVER -->
+  <section>
+    <div class="sec-head"><span class="idx">05</span><h2>How to deliver (productized ops playbook)</h2>
+      <span class="sub">Same "idiot-proof" pattern as the voice agent: one proven pipeline + one config per client. Theming, not custom work.</span></div>
+    <div class="pipe">
+      <div class="step"><div class="no">1</div><div class="body"><h4>Baseline audit (paid, the closer)</h4><p>Map the client's current AI visibility across the 5 primary engines on their key "best [trade] near me" prompts. Crawl for robots.txt / AI-crawler blocks, schema, answer front-loading, GBP + review health.</p><span class="art">Deliverable: "Is your business invisible to AI?" report + competitive benchmark</span></div></div>
+      <div class="step"><div class="no">2</div><div class="body"><h4>Technical unlock (one-time, heavy)</h4><p>Unblock AI crawlers (robots.txt), add/fix schema, front-load a 2–4 sentence direct answer on key pages, question-form H2s, add lists + tables, fix NAP consistency, submit to Bing index.</p><span class="art">Deliverable: technical checklist signed off + Bing/AI-crawler access confirmed</span></div></div>
+      <div class="step"><div class="no b">3</div><div class="body"><h4>Brand-mention engine (the #1 lever, recurring)</h4><p>Brand mentions out-rank backlinks for AI citation. Build the pipeline: Reddit threads, Quora/forums, press releases (via Google News), guest posts, Wikipedia/Common Crawl presence.</p><span class="art">Deliverable: 2–3 live brand placements / month</span></div></div>
+      <div class="step"><div class="no b">4</div><div class="body"><h4>Listicle placement (recurring)</h4><p>LLMs pull heavily from "top 10 / best X" articles. Get the client top-3 in their OWN listicles AND in others' (directories, niche sites, associations).</p><span class="art">Deliverable: listicle placements + rankings tracked</span></div></div>
+      <div class="step"><div class="no">5</div><div class="body"><h4>Local entity authority (ICP-specific)</h4><p>Google Business Profile optimization, review volume/sentiment/recency, local listicles, trade-association + BBB + local-media entity signals.</p><span class="art">Deliverable: entity graph + review velocity</span></div></div>
+      <div class="step"><div class="no b">6</div><div class="body"><h4>Monitor + report (the proof, monthly)</h4><p>Track <b>named-citation instances</b> (not "rank") per engine, before/after vs the benchmark. This is the artifact that justifies the retainer and drives renewals.</p><span class="art">Deliverable: monthly AI-visibility report</span></div></div>
+    </div>
+    <div class="callout" style="margin-top:18px;">
+      <div class="t">One GEO config per client (the voice-config pattern)</div>
+      <p>Business name · key services · top 10 "best [trade]" prompts · target engines · booking/GBP links · FAQ/knowledge base · review source · transfer/report cadence.
+      New client = fill the config + run the pipeline, not build a new strategy. This is what protects margin.</p>
+    </div>
+  </section>
+
+  <!-- 06 RISKS -->
+  <section>
+    <div class="sec-head"><span class="idx">06</span><h2>Risks (stated honestly)</h2>
+      <span class="sub">These are real. The pitch only holds if we under-promise on volume and over-deliver on process + proof.</span></div>
+    <div class="risks">
+      <div class="risk"><span class="sev high">High · delivery</span><h4>Delivery failure</h4><p>Client pays 60–90 days, asks "are we in ChatGPT yet?", answer is no. Churn + refund pressure + reputation hit. See deep-dive below.</p><div class="mit"><b>Mitigate:</b> scope the promise to the RAG layer; sell process + reporting, never a guaranteed citation.</div></div>
+      <div class="risk"><span class="sev high">High · market</span><h4>It's ~1% of traffic</h4><p>The honest baseline. If we oversell volume, one bad month exposes the gap and burns the relationship.</p><div class="mit"><b>Mitigate:</b> anchor on intent + trajectory + named-citation, not share-of-voice.</div></div>
+      <div class="risk"><span class="sev med">Medium · measurement</span><h4>Attribution is fuzzy</h4><p>No clean KPI, engines are non-deterministic, no API. Hard to prove "we did this."</p><div class="mit"><b>Mitigate:</b> report named-citation instances before/after; keep the competitive benchmark as the fixed reference.</div></div>
+      <div class="risk"><span class="sev med">Medium · dependency</span><h4>Engine opacity + ToS</h4><p>We depend on Bing/Google indexes and each engine's crawler policy. An update can reset visibility overnight.</p><div class="mit"><b>Mitigate:</b> diversify across 5 engines + owned mentions (the durable asset), don't bet on one.</div></div>
+      <div class="risk"><span class="sev med">Medium · positioning</span><h4>"Just SEO with a new name"</h4><p>If we don't name the different levers (Bing/RAG, mentions, listicles), the prospect won't feel it's different from SEO.</p><div class="mit"><b>Mitigate:</b> always name the levers; lead with the rank→citation reframe.</div></div>
+      <div class="risk"><span class="sev low">Low · cost</span><h4>Margin erosion</h4><p>Outsourcing too many placements/content drags gross margin from ~78% to ~40%.</p><div class="mit"><b>Mitigate:</b> default to lean in-house delivery; outsource only brand placements.</div></div>
+    </div>
+  </section>
+
+  <!-- 07 DELIVERY-FAILURE DEEP DIVE -->
+  <section>
+    <div class="sec-head"><span class="idx">07</span><h2>Risk of delivery failure — deep dive</h2>
+      <span class="sub">The single biggest commercial risk, and exactly how we de-risk it before selling a single retainer.</span></div>
+    <div class="df">
+      <h3>⚠ What "failure" actually looks like</h3>
+      <p style="color:var(--fog); font-size:13.5px; margin-bottom:16px; max-width:820px;">A client pays for 60–90 days of retainer, opens the monthly report, sees no (or marginal) lift in named-citation instances across the primary engines, and asks: "So what did we get?" That moment — not a bad month — is the delivery-failure event. It triggers churn, refund pressure, and a reputation hit that radiates into the site + voice offers.</p>
+      <div class="grid">
+        <div class="blk"><h5>Root drivers</h5><ul>
+          <li><b>Base-model lag:</b> Claude/GPT base corpus takes 6–12 mo — can't be forced.</li>
+          <li><b>Engine opacity:</b> no API, no guaranteed placement, non-deterministic ranking.</li>
+          <li><b>Low query volume:</b> a niche local business may have too few AI prompts for any business to surface.</li>
+          <li><b>Model updates:</b> one engine release can reset visibility overnight.</li>
+          <li><b>Attribution:</b> hard to prove causation to a skeptical owner.</li>
+        </ul></div>
+        <div class="blk"><h5>De-risking moves (before we sell)</h5><ul>
+          <li><b>Sell the audit first</b> — it's paid, genuinely valuable, and produces the "before."</li>
+          <li><b>Scope the promise to the RAG layer</b> (Bing+Google → 5 engines) — the only layer with a 60–90 day window.</li>
+          <li><b>Set a 60–90 day expectation</b>; report named-citation instances, not "rank."</li>
+          <li><b>Guarantee process + reporting, never a citation</b> — in writing.</li>
+          <li><b>Phase / milestone pricing</b>, not full prepay — aligns risk with delivery.</li>
+          <li><b>Client selection filter</b> (below) — only sell where the channel demonstrably works.</li>
+        </ul></div>
+      </div>
+      <div class="kill">
+        <h5>Client-selection filter — do NOT sell the retainer if…</h5>
+        <ul>
+          <li>Zero AI query volume in their niche (nobody gets cited, client or competitor).</li>
+          <li>No named local competitor is already cited (no proof the channel works for them).</li>
+          <li>They can't state a single concrete business outcome they want from AI visibility.</li>
+          <li>…in any of those cases, sell the <b>audit + technical fixes only</b> (one-time), not the recurring retainer.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 08 RECOMMENDATION -->
+  <section>
+    <div class="sec-head"><span class="idx">08</span><h2>Recommendation &amp; next steps</h2>
+      <span class="sub">The confident pick: launch the audit + Local GEO Retainer now, prove it on 2–3 existing clients, then productize.</span></div>
+    <div class="two" style="margin-bottom:18px;">
+      <div class="card">
+        <h3><span class="ic" style="background:var(--gold)"></span>The pick</h3>
+        <ul>
+          <li><span class="mk">›</span><span><b>Lead:</b> $2.5k "Invisible to AI?" audit (the closer).</span></li>
+          <li><span class="mk">›</span><span><b>Recurring:</b> $3k/mo Local GEO Retainer (lean delivery, ~78% margin).</span></li>
+          <li><span class="mk">›</span><span><b>Upsell:</b> bolt onto every existing website-build + voice client.</span></li>
+          <li><span class="mk b">›</span><span><b>Moat:</b> bundle into "full AI presence" — site + voice + GEO, one vendor.</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3><span class="ic" style="background:var(--npc)"></span>Sequencing</h3>
+        <ul>
+          <li><span class="mk b">›</span><span><b>Now:</b> run the audit free-of-charge-structure on 2–3 existing site clients to build proof cases (they pay, it's valuable).</span></li>
+          <li><span class="mk b">›</span><span><b>30 days:</b> convert ≥1 to the retainer; capture before/after named-citation lift.</span></li>
+          <li><span class="mk b">›</span><span><b>60–90 days:</b> ship the first real case study (X-multiple on citations), then open the offer to cold outreach.</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="steps-final">
+      <div class="ns"><div class="c">1</div><p><b>Build the audit template</b> — the "Is your business invisible to AI?" report (engine baseline + competitive benchmark + technical gaps).</p></div>
+      <div class="ns"><div class="c">2</div><p><b>Stand up monitoring</b> — pick one AI-visibility SaaS (Peec AI / Profound) or wire an in-house scraper for the 5 primary engines.</p></div>
+      <div class="ns"><div class="c">3</div><p><b>Pilot on 2–3 existing clients</b> — apply the client-selection filter; run audit → retainer; log named-citation deltas.</p></div>
+      <div class="ns"><div class="c">4</div><p><b>Write the one-page offer + pricing</b> — audit $2.5k / retainer $3k/mo / bundle, with the delivery-failure guarantees stated plainly.</p></div>
+      <div class="ns"><div class="c">5</div><p><b>Add GEO to the cold-outreach sequence</b> — lead with the competitive-benchmark hook once we have one proof case.</p></div>
+    </div>
+  </section>
+
+  <footer>
+    <div>NPC Protocol · GEO/AEO Business-Model Add-On · Internal strategy doc · 24 Aug 2026</div>
+    <div>Sources: ~18 GEO/AEO videos + Ahrefs / HubSpot / Peec AI / JM Digital / Legiit benchmarks · point-in-time, re-date before quoting</div>
+  </footer>
+
+</div>
+</body>
+</html>
