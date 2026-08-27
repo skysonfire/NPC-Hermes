@@ -29,7 +29,7 @@ const clauses = [
   },
   {
     t: "Who it goes to",
-    b: "A small set of trusted processors run the machinery for us: Bland AI (the voice agent), Twilio (telephony and phone numbers), a language-model provider for text, and our hosting. They process on our behalf under data-processing terms. They do not get to use your data for their own purposes, and we do not resell it.",
+    b: "A small set of trusted processors run the machinery for us: a third-party AI voice platform, a telephony service for phone numbers, a language-model provider for text, and our hosting. They process on our behalf under data-processing terms. They do not get to use your data for their own purposes, and we do not resell it.",
   },
   {
     t: "Your rights",
