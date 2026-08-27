@@ -21,6 +21,13 @@ const columns = [
       { href: "/sarah", label: "Main-character outcomes" },
     ],
   },
+  {
+    title: "Legal",
+    links: [
+      { href: "/privacy", label: "Privacy Policy" },
+      { href: "/terms", label: "Terms of Service" },
+    ],
+  },
 ];
 
 export default function Footer() {
@@ -43,7 +50,7 @@ export default function Footer() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-10 sm:grid-cols-2">
+          <div className="grid grid-cols-2 gap-10 sm:grid-cols-3">
             {columns.map((col) => (
               <div key={col.title}>
                 <h3 className="font-mono text-[11px] uppercase tracking-[0.3em] text-fog-2">
@@ -63,7 +70,13 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-14 flex flex-col items-start justify-between gap-4 border-t border-line pt-6 sm:flex-row sm:items-center">
+        <div className="mt-12 border-t border-line pt-6">
+          <p className="font-mono text-[11px] leading-relaxed tracking-wide text-fog-2">
+            Our AI assistant is automated, and calls may be recorded. AI-generated content may be inaccurate.
+          </p>
+        </div>
+
+        <div className="mt-6 flex flex-col items-start justify-between gap-4 border-t border-line pt-6 sm:flex-row sm:items-center">
           <p className="font-mono text-xs tracking-wide text-fog-2">
             © {year} NPC PROTOCOL — ALL LOOPS BROKEN.
           </p>
