@@ -35,7 +35,7 @@ export default function Nav() {
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
         scrolled || open
-          ? "border-b border-line bg-ink/85 backdrop-blur-xl"
+          ? "glass-nav border-b border-line/80"
           : "border-b border-transparent"
       }`}
     >
@@ -92,7 +92,7 @@ export default function Nav() {
       </nav>
 
       {open && (
-        <div className="border-t border-line bg-ink/95 px-5 pb-6 pt-3 backdrop-blur-xl md:hidden">
+        <div className="glass-nav border-t border-line px-5 pb-6 pt-3 md:hidden">
           <div className="flex flex-col gap-1">
             {links.map((l) => (
               <Link

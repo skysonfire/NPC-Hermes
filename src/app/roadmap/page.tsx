@@ -109,7 +109,7 @@ export default function Roadmap() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {pipeline.map((p, i) => (
             <Reveal key={p.stage} delay={i * 0.07} y={30}>
-              <div className="relative h-full rounded-2xl border border-line bg-panel p-6 transition-colors duration-300 hover:border-gold/40">
+              <div className="relative h-full rounded-2xl glass p-6 transition-colors duration-300 hover:border-gold/40">
                 <div className="flex items-center justify-between gap-3">
                   <span className="font-display text-4xl font-bold text-line-2">{p.n}</span>
                   <Tag tone={p.tone}>{p.role}</Tag>
@@ -140,8 +140,7 @@ export default function Roadmap() {
 
       {/* ── Cinematic band ─────────────────────────────── */}
       <Band
-        src="/images/engine.jpg"
-        alt=""
+        name="engine"
         quote={
           <>
             AI runs the engine. <span className="text-gold text-glow-gold">You run the business.</span>
@@ -191,7 +190,7 @@ export default function Roadmap() {
         <div className="grid gap-5 md:grid-cols-3">
           {honest.map((h, i) => (
             <Reveal key={h.title} delay={i * 0.08} y={30}>
-              <div className="h-full rounded-2xl border border-line bg-panel p-7 transition-colors duration-300 hover:border-gold/30">
+              <div className="h-full rounded-2xl glass p-7 transition-colors duration-300 hover:border-gold/30">
                 <span className="font-display text-3xl font-bold text-gold">◆</span>
                 <h3 className="mt-4 font-display text-lg font-semibold text-snow">{h.title}</h3>
                 <p className="mt-3 text-sm leading-relaxed text-fog">{h.body}</p>

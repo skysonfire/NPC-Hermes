@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SplitReveal } from "./motion";
 
 /* Brand mark — a diamond node (protocol) with a core. Gold frame, cyan core. */
 export function Mark({ size = 26 }: { size?: number }) {
@@ -109,9 +110,12 @@ export function SectionHeading({
           <Eyebrow tone={eyebrowTone}>{eyebrow}</Eyebrow>
         </div>
       )}
-      <h2 className="font-display text-3xl font-bold leading-[1.15] tracking-tight text-snow sm:text-4xl md:text-[2.75rem]">
+      <SplitReveal
+        as="h2"
+        className="font-display text-3xl font-bold leading-[1.15] tracking-tight text-snow sm:text-4xl md:text-[2.75rem]"
+      >
         {title}
-      </h2>
+      </SplitReveal>
       {lede && <p className="mt-5 text-base leading-relaxed text-fog sm:text-lg">{lede}</p>}
     </div>
   );

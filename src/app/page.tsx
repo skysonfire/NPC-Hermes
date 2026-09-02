@@ -163,8 +163,7 @@ export default function Home() {
 
       {/* ── Cinematic band ─────────────────────────────── */}
       <Band
-        src="/images/studio.jpg"
-        alt=""
+        name="studio"
         quote={
           <>
             Scroll past one and you've scrolled past{" "}
@@ -195,7 +194,7 @@ export default function Home() {
           {steps.map((s, i) => (
             <Reveal key={s.n} delay={i * 0.08} y={34}>
               <Tilt className="h-full">
-                <div className="group h-full rounded-2xl border border-line bg-panel p-6 transition-all duration-300 hover:border-gold/40">
+                <div className="group h-full rounded-2xl glass p-6 transition-all duration-300 hover:border-gold/40">
                   <div className="font-display text-5xl font-bold leading-none text-line-2 transition-colors duration-300 group-hover:text-gold">
                     {s.n}
                   </div>
@@ -238,7 +237,7 @@ export default function Home() {
                   <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-fog-2">
                     Slot 03
                   </span>
-                  <div className="my-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-line bg-panel">
+                  <div className="my-6 flex h-16 w-16 items-center justify-center rounded-2xl glass">
                     <span className="font-display text-3xl font-bold text-fog-2">→</span>
                   </div>
                   <h3 className="font-display text-xl font-semibold text-snow">Next project</h3>
@@ -252,7 +251,7 @@ export default function Home() {
                   </div>
                 </div>
               ) : (
-                <div className="group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-panel transition-colors duration-300 hover:border-gold/40">
+                <div className="group flex h-full flex-col overflow-hidden rounded-2xl glass transition-colors duration-300 hover:border-gold/40">
                   {/* browser chrome */}
                   <div className="flex items-center gap-1.5 border-b border-line bg-ink/70 px-4 py-2.5">
                     <span className="h-2.5 w-2.5 rounded-full bg-line-2" />
@@ -348,7 +347,7 @@ export default function Home() {
           <div>
             <Reveal y={30}>
               <Figure
-                src="/images/sarah.jpg"
+                name="sarah"
                 alt="A designer's desk at dusk — the kind of workspace Sarah's new site finally reflects"
                 label="The after · Sarah"
                 className="mb-4 h-52 sm:h-64"
@@ -356,7 +355,7 @@ export default function Home() {
             </Reveal>
             <div className="grid grid-cols-3 gap-4">
               <Reveal delay={0.05}>
-                <div className="flex h-full flex-col items-center justify-center rounded-2xl border border-line bg-panel px-4 py-8 text-center">
+                <div className="flex h-full flex-col items-center justify-center rounded-2xl glass px-4 py-8 text-center">
                   <span className="font-display text-3xl font-bold text-gold text-glow-gold sm:text-4xl">
                     <CountUp to={3.2} decimals={1} suffix="×" />
                   </span>
@@ -366,7 +365,7 @@ export default function Home() {
                 </div>
               </Reveal>
               <Reveal delay={0.15}>
-                <div className="flex h-full flex-col items-center justify-center rounded-2xl border border-line bg-panel px-4 py-8 text-center">
+                <div className="flex h-full flex-col items-center justify-center rounded-2xl glass px-4 py-8 text-center">
                   <span className="font-display text-3xl font-bold text-gold text-glow-gold sm:text-4xl">
                     <CountUp to={2} suffix=" wks" />
                   </span>
@@ -376,7 +375,7 @@ export default function Home() {
                 </div>
               </Reveal>
               <Reveal delay={0.25}>
-                <div className="flex h-full flex-col items-center justify-center rounded-2xl border border-line bg-panel px-4 py-8 text-center">
+                <div className="flex h-full flex-col items-center justify-center rounded-2xl glass px-4 py-8 text-center">
                   <span className="font-display text-3xl font-bold text-gold text-glow-gold sm:text-4xl">
                     <CountUp to={1} suffix=" of 1" />
                   </span>
@@ -417,7 +416,7 @@ export default function Home() {
           </Reveal>
 
           <Reveal delay={0.12} y={34}>
-            <div className="rounded-3xl border border-line bg-panel p-2">
+            <div className="rounded-3xl glass p-2">
               {engine.map((e) => (
                 <div
                   key={e.role}

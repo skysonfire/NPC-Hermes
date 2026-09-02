@@ -67,7 +67,7 @@ export default function Protocol() {
           {steps.map((s, i) => (
             <Reveal key={s.n} y={34} delay={i * 0.05}>
               <Tilt max={2}>
-                <div className="group grid gap-8 rounded-3xl border border-line bg-panel p-7 transition-colors duration-300 hover:border-gold/30 sm:grid-cols-[auto_1fr] sm:p-9">
+                <div className="group grid gap-8 rounded-3xl glass p-7 transition-colors duration-300 hover:border-gold/30 sm:grid-cols-[auto_1fr] sm:p-9">
                   <div className="flex items-center sm:block">
                     <span className="font-display text-5xl font-bold text-line-2 transition-colors duration-300 group-hover:text-gold sm:text-6xl">
                       {s.n}
@@ -100,8 +100,7 @@ export default function Protocol() {
 
       {/* ── Cinematic band ─────────────────────────────── */}
       <Band
-        src="/images/arch.jpg"
-        alt=""
+        name="arch"
         quote={
           <>
             If it could be anyone's site, <span className="text-gold text-glow-gold">it's not done</span>.
@@ -119,7 +118,7 @@ export default function Protocol() {
         <div className="grid gap-5 sm:grid-cols-2">
           {principles.map((p, i) => (
             <Reveal key={p.title} delay={i * 0.07} y={30}>
-              <div className="h-full rounded-2xl border border-line bg-panel p-7 transition-colors duration-300 hover:border-gold/30">
+              <div className="h-full rounded-2xl glass p-7 transition-colors duration-300 hover:border-gold/30">
                 <h3 className="font-display text-lg font-semibold text-snow">{p.title}</h3>
                 <p className="mt-3 text-sm leading-relaxed text-fog">{p.body}</p>
               </div>

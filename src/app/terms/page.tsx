@@ -129,7 +129,7 @@ export default function Terms() {
                   className={
                     c.strong
                       ? "grid gap-4 rounded-2xl border border-gold/40 bg-gold/5 p-6 sm:grid-cols-[auto_1fr] sm:p-7"
-                      : "grid gap-4 rounded-2xl border border-line bg-panel p-6 transition-colors duration-300 hover:border-gold/30 sm:grid-cols-[auto_1fr] sm:p-7"
+                      : "grid gap-4 rounded-2xl glass p-6 transition-colors duration-300 hover:border-gold/30 sm:grid-cols-[auto_1fr] sm:p-7"
                   }
                 >
                   <span

@@ -132,7 +132,7 @@ export default function Msa() {
                   className={
                     c.strong
                       ? "rounded-2xl border border-gold/40 bg-gold/5 p-6 sm:p-7"
-                      : "rounded-2xl border border-line bg-panel p-6 transition-colors duration-300 hover:border-gold/30 sm:p-7"
+                      : "rounded-2xl glass p-6 transition-colors duration-300 hover:border-gold/30 sm:p-7"
                   }
                 >
                   <h2 className="font-display text-lg font-semibold text-snow">{c.t}</h2>

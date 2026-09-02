@@ -104,7 +104,7 @@ export default function Privacy() {
           <div className="mt-10 space-y-4">
             {clauses.map((c, i) => (
               <Reveal key={c.t} y={18}>
-                <div className="grid gap-4 rounded-2xl border border-line bg-panel p-6 transition-colors duration-300 hover:border-gold/30 sm:grid-cols-[auto_1fr] sm:p-7">
+                <div className="grid gap-4 rounded-2xl glass p-6 transition-colors duration-300 hover:border-gold/30 sm:grid-cols-[auto_1fr] sm:p-7">
                   <span className="font-mono text-sm font-semibold text-gold">
                     {String(i + 1).padStart(2, "0")}
                   </span>

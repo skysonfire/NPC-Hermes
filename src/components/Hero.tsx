@@ -115,7 +115,13 @@ export default function Hero() {
     <section ref={rootRef} className="relative overflow-hidden">
       {/* background */}
       <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute inset-0 bg-cover bg-center opacity-[0.16] [mask-image:linear-gradient(to_bottom,black_20%,transparent_95%)]" style={{ backgroundImage: "url(/images/hero-bg.jpg)" }} />
+        <div className="absolute inset-0 bg-cover bg-center opacity-[0.16] [mask-image:linear-gradient(to_bottom,black_20%,transparent_95%)]" style={{
+            // image-set lets the browser pick the right width for the screen;
+            // the plain url() is the fallback for browsers without it.
+            backgroundImage:
+              "image-set(url(/images/hero-bg-640.webp) 640w, url(/images/hero-bg-1024.webp) 1024w, url(/images/hero-bg-1600.webp) 1600w)",
+          }}
+          data-hero-bg />
         <div className="absolute inset-x-0 top-0 h-[620px] bg-grid bg-grid-fade opacity-60" />
         <div
           data-orb-a

@@ -78,7 +78,7 @@ export default function Sarah() {
         </div>
 
         <Reveal className="mx-auto mt-14 max-w-3xl" y={30}>
-          <blockquote className="rounded-3xl border border-line bg-panel px-8 py-10 text-center">
+          <blockquote className="rounded-3xl glass px-8 py-10 text-center">
             <p className="font-display text-xl font-medium leading-relaxed text-snow sm:text-2xl">
               "I wasn't trying to look like a design agency. I was trying to look like the person who
               actually solves the problem. The site finally does."
@@ -91,7 +91,7 @@ export default function Sarah() {
 
         <Reveal className="mt-14" y={34}>
           <Figure
-            src="/images/sarah-desk.jpg"
+            name="sarah-desk"
             alt="Sarah's design desk — sketches, type samples and a screen glowing at dusk"
             label="Sarah's desk"
             className="h-64 sm:h-80"
@@ -113,7 +113,7 @@ export default function Sarah() {
         <div className="grid gap-5 sm:grid-cols-3">
           {stage.map((t, i) => (
             <Reveal key={t} delay={i * 0.08} y={30}>
-              <div className="h-full rounded-2xl border border-line bg-panel p-7 transition-colors duration-300 hover:border-gold/30">
+              <div className="h-full rounded-2xl glass p-7 transition-colors duration-300 hover:border-gold/30">
                 <span className="font-display text-3xl font-bold text-gold">0{i + 1}</span>
                 <p className="mt-4 text-[15px] leading-relaxed text-fog">{t}</p>
               </div>

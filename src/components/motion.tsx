@@ -9,13 +9,14 @@ import {
 } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { SplitText } from "gsap/SplitText";
 import Lenis from "lenis";
 import { usePathname } from "next/navigation";
 
 let gsapReady = false;
 function ensureGsap() {
   if (!gsapReady) {
-    gsap.registerPlugin(ScrollTrigger);
+    gsap.registerPlugin(ScrollTrigger, SplitText);
     gsapReady = true;
   }
 }
@@ -302,6 +303,99 @@ export function CountUp({
       {to.toFixed(decimals)}
       {suffix}
     </span>
+  );
+}
+
+/**
+ * Headline reveal: the text rises in line by line behind a mask.
+ *
+ * SAFETY: the children are rendered as ordinary, fully visible markup. The
+ * split only ever happens after mount, inside a try/catch, and is reverted on
+ * cleanup — so a SplitText failure, a font that never loads, or a thrown error
+ * leaves readable text rather than an empty heading. Nothing here can hide
+ * content that the server already rendered.
+ */
+export function SplitReveal({
+  children,
+  className = "",
+  as: Tag = "h2",
+  delay = 0,
+}: {
+  children: ReactNode;
+  className?: string;
+  as?: "h1" | "h2" | "h3" | "p" | "div";
+  delay?: number;
+}) {
+  const ref = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (prefersReducedMotion() || typeof IntersectionObserver === "undefined") return;
+
+    let split: InstanceType<typeof SplitText> | null = null;
+    let tween: gsap.core.Tween | null = null;
+    let io: IntersectionObserver | null = null;
+
+    try {
+      ensureGsap();
+      split = new SplitText(el, {
+        type: "lines",
+        linesClass: "split-line",
+        // Each line gets a wrapper so it can be masked without clipping
+        // descenders on the line above.
+        mask: "lines",
+      });
+
+      const lines = split.lines;
+      if (!lines.length) throw new Error("no lines produced");
+
+      gsap.set(lines, { yPercent: 115, opacity: 0 });
+
+      io = new IntersectionObserver(
+        (entries) => {
+          if (!entries.some((e) => e.isIntersecting)) return;
+          io?.disconnect();
+          tween = gsap.to(lines, {
+            yPercent: 0,
+            opacity: 1,
+            duration: 0.95,
+            ease: "power4.out",
+            stagger: 0.08,
+            delay,
+          });
+        },
+        { threshold: 0.15 }
+      );
+      io.observe(el);
+
+      // Failsafe, same principle as the reveal watchdog: if the observer never
+      // fires (hidden tab, throttled renderer), show the text anyway.
+      const t = window.setTimeout(() => {
+        if (tween) return;
+        gsap.set(lines, { yPercent: 0, opacity: 1 });
+      }, REVEAL_DEADLINE_MS);
+
+      return () => {
+        window.clearTimeout(t);
+        io?.disconnect();
+        tween?.kill();
+        split?.revert();
+      };
+    } catch {
+      // Any failure: undo whatever was applied and leave the original text.
+      try {
+        split?.revert();
+      } catch {}
+      io?.disconnect();
+      return;
+    }
+  }, [delay]);
+
+  return (
+    <Tag ref={ref as never} className={className}>
+      {children}
+    </Tag>
   );
 }
 

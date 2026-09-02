@@ -50,7 +50,7 @@ export default function Contact() {
             <div className="space-y-4">
               <a
                 href={`mailto:${contact.email}`}
-                className="group flex items-center justify-between rounded-2xl border border-line bg-panel px-6 py-5 transition-colors duration-300 hover:border-gold/40"
+                className="group flex items-center justify-between rounded-2xl glass px-6 py-5 transition-colors duration-300 hover:border-gold/40"
               >
                 <div>
                   <span className="font-mono text-[10px] uppercase tracking-widest text-fog-2">Email</span>
@@ -65,7 +65,7 @@ export default function Contact() {
                 href="https://x.com/npcprotocol"
                 target="_blank"
                 rel="noreferrer"
-                className="group flex items-center justify-between rounded-2xl border border-line bg-panel px-6 py-5 transition-colors duration-300 hover:border-npc/40"
+                className="group flex items-center justify-between rounded-2xl glass px-6 py-5 transition-colors duration-300 hover:border-npc/40"
               >
                 <div>
                   <span className="font-mono text-[10px] uppercase tracking-widest text-fog-2">Handle</span>
@@ -76,7 +76,7 @@ export default function Contact() {
                 </span>
               </a>
 
-              <div className="rounded-2xl border border-line bg-panel px-6 py-5">
+              <div className="rounded-2xl glass px-6 py-5">
                 <span className="font-mono text-[10px] uppercase tracking-widest text-fog-2">Hours</span>
                 <p className="mt-1 text-sm font-medium text-snow">{contact.hours}</p>
               </div>

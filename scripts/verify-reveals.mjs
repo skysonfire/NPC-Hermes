@@ -60,12 +60,37 @@ async function walkPage(page) {
     const stragglers = [...document.querySelectorAll(`${sel}:not(.is-revealed)`)]
       .slice(0, 5)
       .map((el) => (el.textContent || "").trim().slice(0, 70));
+    // Headings are split into masked lines by SplitReveal. That is a second,
+    // independent way text can end up invisible, so assert every heading is
+    // actually readable: present in the DOM, non-empty, and painted.
+    const headings = [...document.querySelectorAll("h1, h2, h3")];
+    const invisibleHeadings = headings
+      .filter((h) => {
+        const text = (h.textContent || "").trim();
+        if (!text) return false; // genuinely empty heading, not our concern
+        const cs = getComputedStyle(h);
+        if (cs.display === "none" || cs.visibility === "hidden") return true;
+        if (parseFloat(cs.opacity) === 0) return true;
+        // A split heading whose lines are all still masked reads as blank.
+        const lines = h.querySelectorAll(".split-line");
+        if (lines.length) {
+          const anyVisible = [...lines].some(
+            (l) => parseFloat(getComputedStyle(l).opacity) > 0.01
+          );
+          if (!anyVisible) return true;
+        }
+        return h.getBoundingClientRect().height === 0;
+      })
+      .map((h) => (h.textContent || "").trim().slice(0, 60));
+
     return {
       final,
       stragglers,
       elapsedMs: Math.round(performance.now() - start),
       marks,
       motionOn: document.documentElement.classList.contains("motion-on"),
+      headingCount: headings.length,
+      invisibleHeadings,
     };
   });
 }
@@ -85,7 +110,10 @@ for (const vp of VIEWPORTS) {
 
   for (const route of ROUTES) {
     const url = BASE.replace(/\/$/, "") + route;
-    await page.goto(url, { waitUntil: "networkidle" });
+    // domcontentloaded, not networkidle: Next continuously prefetches route
+    // payloads, so the network never goes idle and the wait times out.
+    await page.goto(url, { waitUntil: "domcontentloaded" });
+    await page.waitForTimeout(700);
     const r = await walkPage(page);
 
     const ok = r.final.total === 0 || r.final.revealed === r.final.total;
@@ -95,7 +123,9 @@ for (const vp of VIEWPORTS) {
     const revealedEarly = r.marks.some((m) => m.t < 3000 && m.revealed > 0);
     const progressive = r.final.total === 0 || revealedEarly;
 
-    if (!ok || !progressive) failures++;
+    const headingsOk = r.invisibleHeadings.length === 0;
+
+    if (!ok || !progressive || !headingsOk) failures++;
     rows.push({
       viewport: vp.name,
       route,
@@ -103,7 +133,9 @@ for (const vp of VIEWPORTS) {
       revealed: r.final.revealed,
       motionOn: r.motionOn,
       observerFired: progressive,
-      status: ok && progressive ? "PASS" : "FAIL",
+      headings: r.headingCount,
+      invisibleHeadings: r.invisibleHeadings,
+      status: ok && progressive && headingsOk ? "PASS" : "FAIL",
       stragglers: r.stragglers,
     });
   }
@@ -114,9 +146,15 @@ await browser.close();
 
 let out = "";
 for (const r of rows) {
-  out += `${r.status.padEnd(4)} ${r.viewport.padEnd(7)} ${r.route.padEnd(11)} reveals ${r.revealed}/${r.total}  motion-on=${r.motionOn}  observer=${r.observerFired}\n`;
-  if (r.status === "FAIL" && r.stragglers.length) {
+  const headingsVisible = r.headings - r.invisibleHeadings.length;
+  out +=
+    `${r.status.padEnd(4)} ${r.viewport.padEnd(7)} ${r.route.padEnd(11)}` +
+    ` reveals ${String(r.revealed + "/" + r.total).padEnd(7)}` +
+    ` headings ${String(headingsVisible + "/" + r.headings).padEnd(6)}` +
+    ` observer=${r.observerFired}\n`;
+  if (r.status === "FAIL") {
     for (const s of r.stragglers) out += `       still hidden: ${s}\n`;
+    for (const h of r.invisibleHeadings) out += `       INVISIBLE HEADING: ${h}\n`;
   }
 }
 out += failures === 0
