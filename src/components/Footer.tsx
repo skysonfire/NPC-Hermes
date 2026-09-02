@@ -26,6 +26,9 @@ const columns = [
     links: [
       { href: "/privacy", label: "Privacy Policy" },
       { href: "/terms", label: "Terms of Service" },
+      { href: "/msa", label: "Master Services Agreement" },
+      { href: "/dpa", label: "Data Processing Addendum" },
+      { href: "/voice-services", label: "AI Voice Services" },
     ],
   },
 ];
@@ -72,7 +75,7 @@ export default function Footer() {
 
         <div className="mt-12 border-t border-line pt-6">
           <p className="font-mono text-[11px] leading-relaxed tracking-wide text-fog-2">
-            Our AI assistant is automated, and calls may be recorded. AI-generated content may be inaccurate.
+            Our AI assistant is automated, and calls are recorded. AI-generated content may be inaccurate.
           </p>
         </div>
 

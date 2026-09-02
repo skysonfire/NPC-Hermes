@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "og": "node scripts/make-og.mjs",
+    "verify": "node scripts/verify-reveals.mjs",
+    "predeploy": "npm run build",
+    "deploy": "wrangler deploy"
   },
   "dependencies": {
     "gsap": "^3.15.0",

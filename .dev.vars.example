@@ -1,0 +1,13 @@
+# Local Worker secrets for `wrangler dev`. Copy to `.dev.vars` (gitignored).
+# In production set these with: npx wrangler secret put <NAME>
+#
+# Configure AT LEAST ONE delivery transport, or /api/contact returns 502 and
+# the form tells the visitor to email instead. It never fakes success.
+
+# Transport A — any JSON webhook (Zapier, Make, n8n, Slack, Discord, your CRM).
+# LEAD_WEBHOOK_URL = "https://hooks.example.com/..."
+
+# Transport B — email via Resend. FROM must be on a domain you've verified.
+# RESEND_API_KEY  = "re_..."
+# LEAD_TO_EMAIL   = "hello@npcprotocol.com"
+# LEAD_FROM_EMAIL = "site@npcprotocol.com"

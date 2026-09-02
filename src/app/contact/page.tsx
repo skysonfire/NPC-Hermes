@@ -1,11 +1,13 @@
 import { Button, Eyebrow } from "@/components/ui";
 import { Reveal, Magnetic } from "@/components/motion";
+import ContactForm from "@/components/ContactForm";
+import { site } from "@/lib/site";
 
 const contact = {
-  email: "hello@npcprotocol.studio",
-  handle: "@npcprotocol",
-  hours: "Mon–Fri · 9:00–18:00",
-  response: "Replies within 1 business day",
+  email: site.email,
+  handle: site.handle,
+  hours: site.hours,
+  response: site.response,
 };
 
 export default function Contact() {
@@ -40,70 +42,7 @@ export default function Contact() {
               </p>
             </div>
 
-            <form className="space-y-4" action="mailto:hello@npcprotocol.studio" method="post" encType="text/plain">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <label className="block">
-                  <span className="mb-1.5 block font-mono text-[10px] uppercase tracking-widest text-fog-2">
-                    Name
-                  </span>
-                  <input
-                    type="text"
-                    name="name"
-                    required
-                    placeholder="Your name"
-                    className="w-full rounded-xl border border-line bg-panel px-4 py-3 text-sm text-snow outline-none transition-colors placeholder:text-fog-2 focus:border-gold/60"
-                  />
-                </label>
-                <label className="block">
-                  <span className="mb-1.5 block font-mono text-[10px] uppercase tracking-widest text-fog-2">
-                    Email
-                  </span>
-                  <input
-                    type="email"
-                    name="email"
-                    required
-                    placeholder="you@company.com"
-                    className="w-full rounded-xl border border-line bg-panel px-4 py-3 text-sm text-snow outline-none transition-colors placeholder:text-fog-2 focus:border-gold/60"
-                  />
-                </label>
-              </div>
-              <label className="block">
-                <span className="mb-1.5 block font-mono text-[10px] uppercase tracking-widest text-fog-2">
-                  What do you do?
-                </span>
-                <input
-                  type="text"
-                  name="what"
-                  required
-                  placeholder="e.g. I design brand systems for fintech startups"
-                  className="w-full rounded-xl border border-line bg-panel px-4 py-3 text-sm text-snow outline-none transition-colors placeholder:text-fog-2 focus:border-gold/60"
-                />
-              </label>
-              <label className="block">
-                <span className="mb-1.5 block font-mono text-[10px] uppercase tracking-widest text-fog-2">
-                  What's holding you back?
-                </span>
-                <textarea
-                  name="message"
-                  rows={4}
-                  placeholder="The part you can't seem to fix…"
-                  className="w-full resize-none rounded-xl border border-line bg-panel px-4 py-3 text-sm text-snow outline-none transition-colors placeholder:text-fog-2 focus:border-gold/60"
-                />
-              </label>
-              <div className="flex items-center justify-between gap-4">
-                <Magnetic strength={0.2}>
-                  <button
-                    type="submit"
-                    className="inline-flex items-center gap-2 rounded-full bg-gold px-6 py-3 text-sm font-semibold text-ink shadow-lg shadow-gold/50 transition-all duration-300 hover:-translate-y-0.5 hover:bg-gold-soft"
-                  >
-                    Send it <span aria-hidden>→</span>
-                  </button>
-                </Magnetic>
-                <span className="font-mono text-[10px] uppercase tracking-widest text-fog-2">
-                  No spam, no sequences
-                </span>
-              </div>
-            </form>
+            <ContactForm />
           </Reveal>
 
           {/* right: direct lines */}
