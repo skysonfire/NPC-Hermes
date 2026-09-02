@@ -59,8 +59,16 @@
   html {
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
-    scroll-behavior: smooth;
     background: var(--color-ink);
+    /* NOTE: no `scroll-behavior: smooth` here. Lenis requires `auto` and
+       fights it (scrollTo becomes a no-op). Touch devices, where Lenis is
+       deliberately not used, get native smooth scrolling below instead. */
+  }
+
+  @media (hover: none), (pointer: coarse) {
+    html {
+      scroll-behavior: smooth;
+    }
   }
 
   body {
@@ -365,10 +373,22 @@
 }
 
 /* ── motion layer ─────────────────────────────────────────── */
-/* Reveals are hidden ONLY once JS is alive (html.motion-on set by
-   MotionProvider), so no-JS / reduced-motion users always see content. */
+/* Reveals are hidden ONLY after MotionProvider has confirmed
+   IntersectionObserver works and set `html.motion-on`. No-JS, old-browser and
+   reduced-motion users therefore always see fully visible content.
+   The animation is a plain CSS transition, so no JS library can strand an
+   element mid-tween: adding `.is-revealed` is the only thing required. */
 html.motion-on [data-reveal] {
   opacity: 0;
+  transform: translate3d(0, var(--reveal-y, 28px), 0);
+  transition:
+    opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0s),
+    transform 0.85s cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0s);
+}
+
+html.motion-on [data-reveal].is-revealed {
+  opacity: 1;
+  transform: none;
 }
 
 /* infinite ticker */
@@ -390,5 +410,7 @@ html.motion-on [data-reveal] {
   }
   html.motion-on [data-reveal] {
     opacity: 1;
+    transform: none;
+    transition: none;
   }
 }

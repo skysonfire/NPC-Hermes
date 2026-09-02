@@ -27,134 +27,184 @@ export function prefersReducedMotion() {
   );
 }
 
+/** Touch-primary device: no hover, coarse pointer. Smooth scroll is a liability here. */
+function isTouchPrimary() {
+  return (
+    typeof window !== "undefined" &&
+    window.matchMedia("(hover: none), (pointer: coarse)").matches
+  );
+}
+
 const MotionCtx = createContext(false);
 
 /**
- * Global motion layer: Lenis smooth scroll + GSAP ScrollTrigger.
+ * Global motion layer.
  *
- * - Respects prefers-reduced-motion (no lenis, no hidden states, no tweens).
- * - Content is visible by default; `html.motion-on` + [data-reveal] hide it
- *   only after JS is alive, then ScrollTrigger animates it in. No-JS users
- *   and reduced-motion users always see the full page.
- * - A MutationObserver picks up [data-reveal]/[data-parallax] nodes added by
- *   client-side navigation, so all 5 pages animate consistently.
+ * ARCHITECTURE — the rule that matters:
+ *   Content visibility NEVER depends on the smooth-scroll library.
+ *
+ * Reveals are driven by IntersectionObserver, which is scroll-agnostic: it
+ * fires whether the page is scrolled by Lenis, by native touch momentum, by
+ * a screen reader, by find-in-page, or by an anchor jump. The previous
+ * implementation drove reveals off ScrollTrigger, which was updated only from
+ * `lenis.on("scroll")` — so on touch devices, where Lenis does not drive the
+ * scroll, the events never arrived and every [data-reveal] on the page stayed
+ * at opacity:0 forever. The entire site below the hero was invisible on mobile.
+ *
+ * Three independent guarantees that content is shown:
+ *   1. `motion-on` is set only after IntersectionObserver is confirmed usable,
+ *      so no-JS, old-browser and failed-init users get plain visible content.
+ *   2. The observer reveals anything that intersects, once.
+ *   3. A watchdog reveals everything unconditionally after REVEAL_DEADLINE_MS,
+ *      so a stranded element self-heals instead of hiding content permanently.
+ *
+ * Lenis is a progressive enhancement for pointer devices only. On touch we use
+ * native scrolling, which is smoother, cheaper, and doesn't fight the browser.
  */
+
+/** Hard ceiling: after this, every reveal is shown no matter what. */
+const REVEAL_DEADLINE_MS = 4000;
+
 export function MotionProvider({ children }: { children: ReactNode }) {
   const lenisRef = useRef<Lenis | null>(null);
   const pathname = usePathname();
 
   useEffect(() => {
-    if (prefersReducedMotion()) return;
-    ensureGsap();
-    document.documentElement.classList.add("motion-on");
-    // Don't let the browser restore the previous page's scroll position.
-    if ("scrollRestoration" in window.history) {
-      window.history.scrollRestoration = "manual";
+    const reduced = prefersReducedMotion();
+
+    // ---- Reveal layer (always on, except reduced-motion) -------------------
+    // Runs independently of Lenis/GSAP so a failure there cannot hide content.
+    let io: IntersectionObserver | null = null;
+    let watchdog = 0;
+
+    const revealAll = () => {
+      document
+        .querySelectorAll<HTMLElement>("[data-reveal]:not(.is-revealed)")
+        .forEach((el) => el.classList.add("is-revealed"));
+    };
+
+    if (!reduced && typeof IntersectionObserver !== "undefined") {
+      // Only now is it safe to let CSS hide reveals.
+      document.documentElement.classList.add("motion-on");
+
+      io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            const el = entry.target as HTMLElement;
+            el.classList.add("is-revealed");
+            io?.unobserve(el);
+          });
+        },
+        // Slight negative bottom margin so items reveal just before they're
+        // fully in view; generous top margin so upward scroll never strands.
+        { rootMargin: "0px 0px -8% 0px", threshold: 0.01 }
+      );
+
+      // Dedupe must live with the observer, NOT on the element. A flag stored
+      // in the DOM survives this effect being torn down and re-run (React's
+      // dev double-mount, or any remount), which would make the second pass
+      // skip every element while the first observer is already disconnected —
+      // leaving nothing observed and the whole page hidden.
+      const observed = new WeakSet<HTMLElement>();
+
+      const observeAll = () => {
+        document
+          .querySelectorAll<HTMLElement>("[data-reveal]:not(.is-revealed)")
+          .forEach((el) => {
+            if (observed.has(el)) return;
+            observed.add(el);
+            const y = el.getAttribute("data-reveal-y");
+            if (y !== null) el.style.setProperty("--reveal-y", `${y}px`);
+            const d = el.getAttribute("data-reveal-delay");
+            if (d) el.style.setProperty("--reveal-delay", `${d}s`);
+            io!.observe(el);
+          });
+      };
+      observeAll();
+
+      // Client-side navigation swaps the tree; pick up new nodes.
+      const mo = new MutationObserver(observeAll);
+      mo.observe(document.body, { childList: true, subtree: true });
+
+      // Guarantee #3 — nothing stays hidden past the deadline.
+      watchdog = window.setTimeout(revealAll, REVEAL_DEADLINE_MS);
+
+      // ---- Smooth scroll + parallax: pointer devices only ------------------
+      let cleanupScroll = () => {};
+      if (!isTouchPrimary()) {
+        ensureGsap();
+        const lenis = new Lenis({ lerp: 0.09, duration: 1.15 });
+        lenisRef.current = lenis;
+        lenis.on("scroll", ScrollTrigger.update);
+        const tick = (time: number) => lenis.raf(time * 1000);
+        gsap.ticker.add(tick);
+        gsap.ticker.lagSmoothing(0);
+
+        const parallaxed = new WeakSet<HTMLElement>();
+        const setupParallax = () => {
+          document
+            .querySelectorAll<HTMLElement>("[data-parallax]")
+            .forEach((el) => {
+              if (parallaxed.has(el)) return;
+              parallaxed.add(el);
+              const speed = parseFloat(el.getAttribute("data-parallax") || "0.15");
+              const trigger =
+                (el.closest("section") as HTMLElement) || el.parentElement;
+              if (!trigger) return;
+              gsap.fromTo(
+                el,
+                { yPercent: -speed * 100 },
+                {
+                  yPercent: speed * 100,
+                  ease: "none",
+                  scrollTrigger: {
+                    trigger,
+                    start: "top bottom",
+                    end: "bottom top",
+                    scrub: 1,
+                  },
+                }
+              );
+            });
+        };
+        setupParallax();
+        const pmo = new MutationObserver(setupParallax);
+        pmo.observe(document.body, { childList: true, subtree: true });
+
+        const onLoad = () => ScrollTrigger.refresh();
+        window.addEventListener("load", onLoad);
+
+        cleanupScroll = () => {
+          pmo.disconnect();
+          window.removeEventListener("load", onLoad);
+          lenis.destroy();
+          lenisRef.current = null;
+          gsap.ticker.remove(tick);
+          ScrollTrigger.getAll().forEach((t) => t.kill());
+        };
+      }
+
+      return () => {
+        mo.disconnect();
+        io?.disconnect();
+        window.clearTimeout(watchdog);
+        cleanupScroll();
+        document.documentElement.classList.remove("motion-on");
+      };
     }
 
-    const lenis = new Lenis({ lerp: 0.09, duration: 1.15 });
-    lenisRef.current = lenis;
-    lenis.on("scroll", () => ScrollTrigger.update());
-    const tick = (time: number) => lenis.raf(time * 1000);
-    gsap.ticker.add(tick);
-    gsap.ticker.lagSmoothing(0);
-
-    const done = new WeakSet<HTMLElement>();
-    const pending = new Set<HTMLElement>(); // reveals not yet shown
-
-    const showReveal = (el: HTMLElement) => {
-      pending.delete(el);
-      ScrollTrigger.getAll()
-        .filter((t) => t.trigger === el)
-        .forEach((t) => t.kill());
-      gsap.killTweensOf(el);
-      gsap.set(el, { autoAlpha: 1, y: 0 });
-    };
-
-    const setup = (root: ParentNode) => {
-      root.querySelectorAll<HTMLElement>("[data-reveal]").forEach((el) => {
-        if (done.has(el)) return;
-        done.add(el);
-        const yAttr = el.getAttribute("data-reveal-y");
-        const dist = yAttr === "0" || yAttr === "none" ? 0 : yAttr ? parseInt(yAttr, 10) || 28 : 28;
-        const delay = parseFloat(el.getAttribute("data-reveal-delay") || "0");
-        pending.add(el);
-        gsap.fromTo(
-          el,
-          { autoAlpha: 0, y: dist },
-          {
-            autoAlpha: 1,
-            y: 0,
-            duration: 0.9,
-            ease: "power3.out",
-            delay,
-            scrollTrigger: {
-              trigger: el,
-              start: "top 92%",
-              once: true,
-              onEnter: () => pending.delete(el),
-              onEnterBack: () => pending.delete(el),
-            },
-          }
-        );
-      });
-      root.querySelectorAll<HTMLElement>("[data-parallax]").forEach((el) => {
-        if (done.has(el)) return;
-        done.add(el);
-        const speed = parseFloat(el.getAttribute("data-parallax") || "0.15");
-        const trigger = (el.closest("section") as HTMLElement) || el.parentElement;
-        if (!trigger) return;
-        gsap.fromTo(
-          el,
-          { yPercent: -speed * 100 },
-          {
-            yPercent: speed * 100,
-            ease: "none",
-            scrollTrigger: {
-              trigger,
-              start: "top bottom",
-              end: "bottom top",
-              scrub: 1,
-            },
-          }
-        );
-      });
-    };
-    setup(document.body);
-
-    const mo = new MutationObserver(() => setup(document.body));
-    mo.observe(document.body, { childList: true, subtree: true });
-
-    /* Failsafe: content must NEVER stay invisible. If a reveal near the viewport
-       hasn't fired (rAF throttling, print, a11y mode, capture tooling), force it. */
-    const failsafe = () => {
-      const limit = window.innerHeight * 1.3;
-      pending.forEach((el) => {
-        const r = el.getBoundingClientRect();
-        if (r.top < limit) showReveal(el);
-      });
-    };
-    const failsafeTimer = window.setInterval(failsafe, 700);
-    const failsafeStop = window.setTimeout(() => window.clearInterval(failsafeTimer), 20000);
-    window.addEventListener("load", () => ScrollTrigger.refresh());
-
+    // Reduced motion or no IntersectionObserver: content is plainly visible.
     return () => {
-      mo.disconnect();
-      window.clearInterval(failsafeTimer);
-      window.clearTimeout(failsafeStop);
-      lenis.destroy();
-      gsap.ticker.remove(tick);
-      ScrollTrigger.getAll().forEach((t) => t.kill());
-      document.documentElement.classList.remove("motion-on");
+      window.clearTimeout(watchdog);
     };
   }, []);
 
   useEffect(() => {
-    // Every navigation (nav links, logo, footer) lands at the TOP of the page.
-    // Use Lenis's own scroll with `immediate` so it doesn't fight smooth scroll.
+    // Every navigation lands at the top of the page.
     const lenis = lenisRef.current;
     if (lenis) lenis.scrollTo(0, { immediate: true });
-    window.scrollTo(0, 0);
+    else window.scrollTo(0, 0);
   }, [pathname]);
 
   return <MotionCtx.Provider value={true}>{children}</MotionCtx.Provider>;
@@ -190,7 +240,11 @@ export function Reveal({
   );
 }
 
-/** Animated number that counts up when scrolled into view. SSR/no-JS shows the final value. */
+/**
+ * Animated number that counts up when scrolled into view.
+ * Uses IntersectionObserver for the same reason reveals do: it must not depend
+ * on the scroll library. SSR / no-JS / reduced-motion render the final value.
+ */
 export function CountUp({
   to,
   decimals = 0,
@@ -210,24 +264,36 @@ export function CountUp({
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    if (prefersReducedMotion()) return;
+    if (prefersReducedMotion() || typeof IntersectionObserver === "undefined") return;
     ensureGsap();
-    const obj = { v: 0 };
-    const tween = gsap.to(obj, {
-      v: to,
-      duration,
-      ease: "power2.out",
-      scrollTrigger: { trigger: el, start: "top 88%", once: true },
-      onUpdate() {
-        el.textContent = prefix + obj.v.toFixed(decimals) + suffix;
+
+    let tween: gsap.core.Tween | null = null;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((e) => e.isIntersecting)) return;
+        io.disconnect();
+        const obj = { v: 0 };
+        tween = gsap.to(obj, {
+          v: to,
+          duration,
+          ease: "power2.out",
+          onUpdate() {
+            el.textContent = prefix + obj.v.toFixed(decimals) + suffix;
+          },
+          onComplete() {
+            el.textContent = prefix + to.toFixed(decimals) + suffix;
+          },
+        });
       },
-      onComplete() {
-        el.textContent = prefix + to.toFixed(decimals) + suffix;
-      },
-    });
+      { threshold: 0.2 }
+    );
+    io.observe(el);
+
     return () => {
-      tween.scrollTrigger?.kill();
-      tween.kill();
+      io.disconnect();
+      tween?.kill();
+      // Leave the final value on screen — never a half-counted number.
+      el.textContent = prefix + to.toFixed(decimals) + suffix;
     };
   }, [to, decimals, prefix, suffix, duration]);
   return (

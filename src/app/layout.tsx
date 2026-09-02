@@ -3,6 +3,9 @@ import { Unbounded, Inter, JetBrains_Mono } from "next/font/google";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import { MotionProvider } from "@/components/motion";
+// Lenis ships required base styles (html.lenis { height: auto }). Without this
+// import the smooth-scroll wrapper mis-measures page height.
+import "lenis/dist/lenis.css";
 import "./globals.css";
 
 const unbounded = Unbounded({
