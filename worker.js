@@ -50,6 +50,23 @@ function clean(value, max) {
   return value.replace(/[\u0000-\u001F\u007F]/g, " ").trim().slice(0, max);
 }
 
+/** Plain-text lead summary. Shared by the Telegram and email transports. */
+function formatLead(lead) {
+  return [
+    `NEW LEAD — ${lead.name}`,
+    ``,
+    `Email: ${lead.email}`,
+    `Does:  ${lead.what}`,
+    ``,
+    lead.message || "(no message)",
+    ``,
+    `--`,
+    `Country: ${lead.country || "unknown"}`,
+    `Page:    ${lead.referer || "unknown"}`,
+    `At:      ${lead.submittedAt}`,
+  ].join("\n");
+}
+
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 async function handleContact(request, env) {
@@ -124,6 +141,29 @@ async function handleContact(request, env) {
     }
   }
 
+  // Transport C — Telegram. Needs no domain, no company, no DNS and no billing,
+  // so it is the fastest way to make leads actually reach a human. Lands on the
+  // phone you already have open.
+  if (env.TELEGRAM_BOT_TOKEN && env.TELEGRAM_CHAT_ID) {
+    try {
+      const r = await fetch(
+        `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: env.TELEGRAM_CHAT_ID,
+            text: formatLead(lead),
+            disable_web_page_preview: true,
+          }),
+        }
+      );
+      r.ok ? delivered.push("telegram") : failures.push(`telegram ${r.status}`);
+    } catch (e) {
+      failures.push(`telegram ${e.message}`);
+    }
+  }
+
   if (env.RESEND_API_KEY && env.LEAD_TO_EMAIL && env.LEAD_FROM_EMAIL) {
     try {
       const r = await fetch("https://api.resend.com/emails", {
@@ -137,18 +177,7 @@ async function handleContact(request, env) {
           to: [env.LEAD_TO_EMAIL],
           reply_to: email,
           subject: `New lead — ${name}`,
-          text: [
-            `Name:    ${name}`,
-            `Email:   ${email}`,
-            `Does:    ${what}`,
-            ``,
-            message || "(no message)",
-            ``,
-            `--`,
-            `Country: ${lead.country || "unknown"}`,
-            `Page:    ${lead.referer || "unknown"}`,
-            `At:      ${lead.submittedAt}`,
-          ].join("\n"),
+          text: formatLead(lead),
         }),
       });
       r.ok ? delivered.push("email") : failures.push(`email ${r.status}`);

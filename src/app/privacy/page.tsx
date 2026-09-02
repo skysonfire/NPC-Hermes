@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 const clauses = [
   {
     t: "Who we are",
-    b: `NPC Protocol is a design and AI-services company incorporated in the United Arab Emirates, serving clients in the United States and the United Kingdom. This policy covers this website and the services we run for you. Reach us at ${site.email}. This site and these services are operated by ${entityLine()}.`,
+    b: `NPC Protocol is a design and AI-services studio. This policy covers this website and the services we run for you. Reach us at ${site.email}. This site and these services are operated by ${entityLine()}.`,
   },
   {
     t: "What we collect",

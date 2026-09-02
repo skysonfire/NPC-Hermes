@@ -45,6 +45,14 @@ export const site = {
  * automatically; until then the pages read as complete prose without them.
  */
 export const entity = {
+  /**
+   * Set to true ONLY once the company is actually registered. While false,
+   * nothing on the site claims incorporation, a registered office, or a
+   * jurisdiction of registration -- claiming registration you do not yet hold
+   * is a false statement on a legal page, and a live one.
+   */
+  registered: false,
+
   /** Trading name, always safe to show. */
   tradingName: "NPC Protocol",
 
@@ -57,10 +65,11 @@ export const entity = {
   /** Registered address, one line. */
   address: "",
 
-  /** Free zone / emirate the entity is registered in. */
+  /** Free zone / emirate the entity is registered in. Used only when registered. */
   jurisdiction: "Meydan Free Zone, Dubai, United Arab Emirates",
 
-  /** Country for governing-law clauses. */
+  /** Country whose law governs. A contract may choose this independently of
+   *  where the operator is registered, so it is safe to state while unregistered. */
   country: "United Arab Emirates",
 
   /** Courts named in dispute clauses. */
@@ -69,7 +78,7 @@ export const entity = {
 
 /** True when the entity block is complete enough for the legal pages to be relied on. */
 export const entityComplete = Boolean(
-  entity.legalName && entity.licenceNumber && entity.address
+  entity.registered && entity.legalName && entity.licenceNumber && entity.address
 );
 
 /**
@@ -77,8 +86,11 @@ export const entityComplete = Boolean(
  * Degrades gracefully as details are filled in.
  */
 export function entityLine(): string {
-  const parts: string[] = [];
-  parts.push(entity.legalName || entity.tradingName);
+  // Until the company exists, say only the name. No "registered in", no
+  // jurisdiction, no address -- none of it is true yet.
+  if (!entity.registered) return entity.tradingName;
+
+  const parts: string[] = [entity.legalName || entity.tradingName];
   if (entity.licenceNumber) parts.push(`licence no. ${entity.licenceNumber}`);
   parts.push(`registered in ${entity.jurisdiction}`);
   if (entity.address) parts.push(entity.address);

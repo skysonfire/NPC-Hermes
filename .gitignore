@@ -19,3 +19,6 @@ tsconfig.tsbuildinfo
 .astro/
 dist/
 .DS_Store
+
+# static export output (deployed by wrangler)
+dist/

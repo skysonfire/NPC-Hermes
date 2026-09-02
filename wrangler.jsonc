@@ -3,7 +3,7 @@
   "compatibility_date": "2025-01-01",
   "main": "worker.js",
   "assets": {
-    "directory": "out",
+    "directory": "dist",
     "binding": "ASSETS",
     // Without this, Cloudflare serves matching static files directly and never
     // invokes the Worker — which would mean no security headers on any HTML
