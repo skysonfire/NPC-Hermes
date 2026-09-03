@@ -1,7 +1,22 @@
+import type { Metadata } from "next";
 import PageHero from "@/components/PageHero";
 import { Section, Button, Eyebrow, Divider } from "@/components/ui";
 import { Reveal, CountUp, Magnetic } from "@/components/motion";
 import { Figure } from "@/components/media";
+
+export const metadata: Metadata = {
+  title: "Sarah's story",
+  description:
+    "A representative engagement, start to finish: what was broken, what we changed, and what it did to her enquiries. Figures anonymised and rounded.",
+  alternates: { canonical: "/sarah" },
+  openGraph: {
+    title: "Sarah's story",
+    description:
+      "A representative engagement, start to finish: what was broken, what we changed, and what it did to her enquiries. Figures anonymised and rounded.",
+    url: "/sarah",
+  },
+};
+
 
 const before = [
   "A template site that could belong to anyone in her field",

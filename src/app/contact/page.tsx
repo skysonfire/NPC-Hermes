@@ -1,7 +1,22 @@
+import type { Metadata } from "next";
 import { Button, Eyebrow } from "@/components/ui";
 import { Reveal, Magnetic } from "@/components/motion";
 import ContactForm from "@/components/ContactForm";
 import { site } from "@/lib/site";
+
+export const metadata: Metadata = {
+  title: "Start your story",
+  description:
+    "Tell me what you do in two minutes. I'll tell you why nobody remembers it yet, and what the main-character version of your site looks like.",
+  alternates: { canonical: "/contact" },
+  openGraph: {
+    title: "Start your story",
+    description:
+      "Tell me what you do in two minutes. I'll tell you why nobody remembers it yet, and what the main-character version of your site looks like.",
+    url: "/contact",
+  },
+};
+
 
 const contact = {
   email: site.email,

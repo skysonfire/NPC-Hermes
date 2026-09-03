@@ -9,9 +9,11 @@
     "lint": "eslint",
     "og": "node scripts/make-og.mjs",
     "verify": "node scripts/verify-reveals.mjs",
-    "predeploy": "npm run build",
+    "predeploy": "npm run build && npm run audit",
     "deploy": "wrangler deploy",
-    "images": "node scripts/optimize-images.mjs"
+    "images": "node scripts/optimize-images.mjs",
+    "audit": "node scripts/audit-build.mjs dist",
+    "shots": "node scripts/shots.mjs"
   },
   "dependencies": {
     "gsap": "^3.15.0",

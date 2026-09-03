@@ -1,7 +1,22 @@
+import type { Metadata } from "next";
 import PageHero from "@/components/PageHero";
 import { Section, Button, Eyebrow, Divider, Tag } from "@/components/ui";
 import { Reveal, Magnetic } from "@/components/motion";
 import { Band } from "@/components/media";
+
+export const metadata: Metadata = {
+  title: "The Engine",
+  description:
+    "Not just a website. How the site, the AI voice front desk and the follow-up fit together into one lead engine that runs after the build ships.",
+  alternates: { canonical: "/roadmap" },
+  openGraph: {
+    title: "The Engine",
+    description:
+      "Not just a website. How the site, the AI voice front desk and the follow-up fit together into one lead engine that runs after the build ships.",
+    url: "/roadmap",
+  },
+};
+
 
 /* ── The engine pipeline: Web → Lead → Qualification → CRM ───────────── */
 const pipeline = [

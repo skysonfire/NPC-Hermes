@@ -7,7 +7,7 @@ import { Reveal } from "@/components/motion";
 export const metadata: Metadata = {
   title: "AI Voice Services Schedule",
   description:
-    "The terms specific to the NPC Protocol AI front-desk — disclosure, recording, consent, human escalation, emergencies, restricted sectors, and permitted territories.",
+    "Terms for the AI front desk: disclosure, call recording, consent, human escalation, emergencies, and restricted sectors.",
 };
 
 type Clause = { t: string; b: string; strong?: boolean };

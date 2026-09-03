@@ -7,7 +7,7 @@ import { Reveal } from "@/components/motion";
 export const metadata: Metadata = {
   title: "Data Processing Addendum",
   description:
-    "The Article 28-compliant addendum governing how NPC Protocol processes personal data as a processor for its clients — subprocessors, security, breach, rights, and deletion.",
+    "How NPC Protocol processes personal data as a processor for its clients: subprocessors, security, breach handling, data rights, and deletion.",
 };
 
 type Clause = { t: string; b: string; strong?: boolean };

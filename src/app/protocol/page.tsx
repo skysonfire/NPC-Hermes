@@ -1,7 +1,22 @@
+import type { Metadata } from "next";
 import PageHero from "@/components/PageHero";
 import { Section, Button, Eyebrow, Divider } from "@/components/ui";
 import { Reveal, Tilt, Magnetic } from "@/components/motion";
 import { Band } from "@/components/media";
+
+export const metadata: Metadata = {
+  title: "The Protocol",
+  description:
+    "The four moves that take a business from background character to protagonist: Read, Cast, Stage, Open. A repeatable system, fixed price, live in days.",
+  alternates: { canonical: "/protocol" },
+  openGraph: {
+    title: "The Protocol",
+    description:
+      "The four moves that take a business from background character to protagonist: Read, Cast, Stage, Open. A repeatable system, fixed price, live in days.",
+    url: "/protocol",
+  },
+};
+
 
 const steps = [
   {
