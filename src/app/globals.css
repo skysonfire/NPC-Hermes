@@ -928,3 +928,17 @@ html.motion-on [data-reveal].is-revealed {
   border-radius: 12px;
   border: 1px solid var(--color-line);
 }
+
+/* Touch targets for the hero state toggle.
+   The toggle is visually small on purpose — it sits beside a mono eyebrow at
+   the top of the hero and a chunky control would unbalance that row. But at
+   that size the buttons are ~23px tall, well under the 44px minimum a finger
+   needs. Rather than inflate the design for everyone, grow the hit area only
+   where the pointer is actually coarse. */
+@media (pointer: coarse) {
+  .tap-target {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+}

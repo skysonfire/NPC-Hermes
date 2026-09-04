@@ -319,10 +319,19 @@ export default function CrowdField({
           hy - size - (narrow ? 22 : 31) + drop + Math.sin(t * 0.0013 + 1.1) * 3;
 
         // The only shadowBlur in the entire field.
+        // Filled with the SAME vertical gradient as the SVG logo (#ff9a42 to
+        // #ff7211) rather than a flat token colour, so the node in the hero and
+        // the mark in the nav are visibly the same object rather than two
+        // orange shapes that happen to share a silhouette.
+        const top = my - 0.4925 * mw;
+        const grad = ctx!.createLinearGradient(0, top, 0, my + 0.4925 * mw);
+        grad.addColorStop(0, `rgba(255,154,66,${st.hero})`);
+        grad.addColorStop(1, `rgba(255,114,17,${st.hero})`);
+
         ctx!.save();
         ctx!.shadowColor = `rgba(${r},${g},${b},${0.85 * st.hero})`;
         ctx!.shadowBlur = 30 * st.hero;
-        ctx!.fillStyle = `rgba(${r},${g},${b},${st.hero})`;
+        ctx!.fillStyle = grad;
         marker(hx, my, mw);
         ctx!.fill();
         ctx!.restore();

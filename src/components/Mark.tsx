@@ -21,8 +21,14 @@ import { useId } from "react";
  * 16px — they merge into an orange smudge. So the tier is chosen from `size`:
  *
  *   >= 44px   full     halo + glass body + fibre bundle + weave + rim + core
- *   >= 22px   mid      halo + body + bloom + rim + core line, no fibres
+ *   >= 22px   mid      halo + SOLID neon fill + bloom + rim + core line
  *   <  22px   solid    one filled shape, nothing to lose
+ *
+ * The mid tier used to carry the same translucent glass body as the full tier.
+ * That body only reads as glass when there are fibres behind it to refract; at
+ * 34px in the nav, with the fibres dropped, it just read as a hollow outline.
+ * Mid now fills solid and keeps the rim and bloom on top — the same lit object,
+ * simply too small to show its internals.
  *
  * IDS
  * Gradients need document-unique ids because several marks share a page (nav
@@ -207,10 +213,10 @@ export function Mark({
         <path d={D} fill={`url(#${solid})`} />
       ) : (
         <>
-          <g filter={`url(#${halo})`} opacity="0.42">
-            <path d={D} fill="none" stroke="#ff7212" strokeWidth="4.5" />
+          <g filter={`url(#${halo})`} opacity={tier === "full" ? 0.42 : 0.6}>
+            <path d={D} fill="none" stroke="#ff7212" strokeWidth={tier === "full" ? 4.5 : 6} />
           </g>
-          <path d={D} fill={`url(#${body})`} />
+          <path d={D} fill={tier === "full" ? `url(#${body})` : `url(#${solid})`} />
 
           {tier === "full" && (
             <>

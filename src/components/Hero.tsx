@@ -310,25 +310,63 @@ export default function Hero() {
       <div className="pointer-events-none relative flex flex-1 items-center">
         <div className="relative mx-auto w-full max-w-6xl px-5 py-10 sm:px-8 sm:py-16">
           <div className="pointer-events-auto max-w-[44rem]">
-            <div
-              data-hero
-              className={`glass-liquid glass-liquid--pill mb-7 inline-flex items-center gap-2.5 px-4 py-1.5 font-mono text-[10px] uppercase tracking-[0.28em] transition-colors duration-700 ${
-                isGold ? "text-gold" : "text-npc"
-              }`}
-            >
-              <span
-                className={`h-1.5 w-1.5 rounded-full transition-colors duration-700 ${
-                  isGold ? "bg-gold" : "bg-npc"
+            {/* STATE ROW — the readout and the control that changes it, on one
+                line, at the top of the fold.
+                The toggle used to live in the slab at the bottom of the hero.
+                On a 900px-tall window that looked fine; at 988x549 it sat 432px
+                BELOW the fold, because the hero's content overflows its own
+                min-height on short viewports. A control nobody can see is not a
+                control. It also belongs next to the state it switches — it was
+                previously about 400px away from the word it changes. */}
+            <div data-hero className="mb-7 flex flex-wrap items-center gap-3">
+              <div
+                className={`glass-liquid glass-liquid--pill inline-flex items-center gap-2.5 px-4 py-1.5 font-mono text-[10px] uppercase tracking-[0.28em] transition-colors duration-700 ${
+                  isGold ? "text-gold" : "text-npc"
                 }`}
-                style={{
-                  boxShadow: `0 0 10px 1px ${
-                    isGold ? "var(--color-gold)" : "var(--color-npc)"
-                  }`,
-                }}
-              />
-              {c.state}
-              <span className="text-fog-2">·</span>
-              <span className="text-fog-2">{c.unit}</span>
+              >
+                <span
+                  className={`h-1.5 w-1.5 rounded-full transition-colors duration-700 ${
+                    isGold ? "bg-gold" : "bg-npc"
+                  }`}
+                  style={{
+                    boxShadow: `0 0 10px 1px ${
+                      isGold ? "var(--color-gold)" : "var(--color-npc)"
+                    }`,
+                  }}
+                />
+                {c.state}
+                <span className="text-fog-2">·</span>
+                <span className="text-fog-2">{c.unit}</span>
+              </div>
+
+              <div
+                role="group"
+                aria-label="Character state"
+                className="flex shrink-0 items-center gap-1 rounded-full border border-line/80 bg-ink/40 p-1"
+              >
+                {(
+                  [
+                    ["npc", "NPC"],
+                    ["mc", "Main character"],
+                  ] as const
+                ).map(([m, label]) => (
+                  <button
+                    key={m}
+                    type="button"
+                    onClick={() => take(m)}
+                    aria-pressed={mode === m}
+                    className={`tap-target rounded-full px-3.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] transition-all duration-300 ${
+                      mode === m
+                        ? m === "mc"
+                          ? "bg-gold text-ink"
+                          : "bg-npc text-ink"
+                        : "text-fog hover:text-snow"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <h1
@@ -424,43 +462,13 @@ export default function Hero() {
 
       {/* ── the readout: liquid-glass HUD pinned to the fold ─────────────── */}
       <div data-hero className="relative z-10 px-5 pb-7 sm:px-8 sm:pb-9">
-        <LiquidGlass className="mx-auto flex w-full max-w-6xl flex-col gap-5 rounded-2xl p-4 sm:p-5 lg:flex-row lg:items-center lg:gap-8">
-          <div className="grid flex-1 grid-cols-3 gap-4 sm:gap-7">
+        <LiquidGlass className="mx-auto w-full max-w-6xl rounded-2xl p-4 sm:p-5">
+          <div className="grid grid-cols-3 gap-5 sm:gap-10">
             {STAT_LABELS.map((label, i) => (
               <Stat key={label} label={label} value={c.stats[i]} gold={isGold} />
             ))}
           </div>
 
-          <div className="hidden h-10 w-px shrink-0 bg-line lg:block" />
-
-          <div
-            role="group"
-            aria-label="Character state"
-            className="flex shrink-0 items-center gap-1 self-start rounded-full border border-line/80 bg-ink/40 p-1 lg:self-auto"
-          >
-            {(
-              [
-                ["npc", "NPC"],
-                ["mc", "Main character"],
-              ] as const
-            ).map(([m, label]) => (
-              <button
-                key={m}
-                type="button"
-                onClick={() => take(m)}
-                aria-pressed={mode === m}
-                className={`rounded-full px-4 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] transition-all duration-300 ${
-                  mode === m
-                    ? m === "mc"
-                      ? "bg-gold text-ink"
-                      : "bg-npc text-ink"
-                    : "text-fog hover:text-snow"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
         </LiquidGlass>
       </div>
     </section>
