@@ -42,7 +42,11 @@ export default function Footer() {
         <div className="flex flex-col justify-between gap-12 md:flex-row">
           <div className="max-w-sm">
             <div className="flex items-center gap-2.5">
-              <Mark />
+              {/* Roomier travel and a slower cycle than the nav: the footer is
+                  read, not scanned past, and the mark is not in fixed chrome
+                  hovering over body copy. The different period also keeps it
+                  from beating in lockstep with the nav mark. */}
+              <Mark bobY={3} bobDur={5} />
               <span className="font-display text-[13px] font-bold tracking-[0.22em] text-snow">
                 NPC PROTOCOL
               </span>

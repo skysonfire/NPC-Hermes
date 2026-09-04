@@ -2,6 +2,7 @@ import Hero from "@/components/Hero";
 import { Section, SectionHeading, Button, Eyebrow, Divider, Tag } from "@/components/ui";
 import { Reveal, CountUp, Marquee, Tilt, Magnetic } from "@/components/motion";
 import { Band, Figure } from "@/components/media";
+import { Faq, type FaqItem } from "@/components/Faq";
 
 const npcTraits = [
   "A template wearing a coat of paint",
@@ -83,6 +84,46 @@ const engine = [
   { role: "Lead", who: "Intake", tone: "npc" as const },
   { role: "Qualify", who: "AI scoring", tone: "npc" as const },
   { role: "CRM", who: "Handoff", tone: "gold" as const },
+];
+
+/* ── FAQ ──────────────────────────────────────────────────────────────────
+   Real questions, answered plainly. Two jobs: it is the page that finally
+   says in flat prose what the product IS, and it is the FAQPage schema our
+   own AEO audit grades on. Nothing here claims a result we cannot evidence —
+   no lead volumes, no rankings, no uptime figures. */
+const faqs: FaqItem[] = [
+  {
+    q: "What do you actually sell?",
+    a: "One bundle, one vendor: a custom website, an AI receptionist that answers your phone, and an ongoing service that qualifies every enquiry and routes it into your CRM. The build is a fixed price. The phone and the follow-up are monthly.",
+  },
+  {
+    q: "What does the AI receptionist do when someone calls?",
+    a: "It answers on the first or second ring, any hour. It finds out who is calling, what the job is, where it is, how urgent it is, and when they are free — then sends you a transcript, a summary and those details as structured fields, not a wall of text. It does not quote prices or commit you to appointments it knows nothing about.",
+  },
+  {
+    q: "Do callers know they are talking to an AI?",
+    a: "Yes, always. The call opens by disclosing it. If the call is recorded, that is disclosed too, and where consent is legally required it is taken before recording starts. Callers who work out mid-conversation that they were misled do not become customers, so being upfront is both the legal position and the commercial one.",
+  },
+  {
+    q: "What happens if someone calls with an emergency?",
+    a: "The agent stops qualifying and escalates. For genuine emergencies it directs people to emergency services rather than to your next available slot. Requests for a human are transferred immediately rather than met with another question. Both behaviours are written into the service terms, not left to chance.",
+  },
+  {
+    q: "Are there industries you will not put a voice agent on?",
+    a: "Yes. Health, financial and legal advice, immigration status, and safeguarding matters route to a person — a voice agent has no business handling the first conversation. The full list of restricted sectors and territories is in the AI voice service terms.",
+  },
+  {
+    q: "How long does the website take?",
+    a: "Days, not weeks. The build runs off a productised system, so the work is content and positioning rather than reinventing a layout. That speed is the point: it is what makes a fixed price possible.",
+  },
+  {
+    q: "Do I own the site, or am I renting it?",
+    a: "You own it. Clean, portable code and no platform lock-in — if you ever want to take it elsewhere, it goes with you. The same applies to the lead pipeline. The tools may change; the asset stays yours.",
+  },
+  {
+    q: "Do you guarantee more leads, or a ranking?",
+    a: "No, and be wary of anyone who does. We guarantee process and data: the work gets done, and you see exactly what was run and what it found. Nobody can promise a placement in an answer engine or a number of enquiries, because nobody controls those systems.",
+  },
 ];
 
 export default function Home() {
@@ -432,6 +473,18 @@ export default function Home() {
             </p>
           </Reveal>
         </div>
+      </Section>
+
+      {/* ── FAQ ────────────────────────────────────────── */}
+      <Section id="faq">
+        <Reveal>
+          <SectionHeading
+            eyebrow="Straight answers"
+            title="The questions people actually ask."
+            lede="What you get, what the phone does, what we will not promise you."
+          />
+        </Reveal>
+        <Faq items={faqs} />
       </Section>
 
       {/* ── Closing CTA ────────────────────────────────── */}

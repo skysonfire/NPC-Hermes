@@ -1,24 +1,9 @@
 import Link from "next/link";
 import { SplitReveal } from "./motion";
 
-/* Brand mark — a diamond node (protocol) with a core. Gold frame, cyan core. */
-export function Mark({ size = 26 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 26 26" fill="none" aria-hidden="true">
-      <rect
-        x="6.5"
-        y="6.5"
-        width="13"
-        height="13"
-        rx="2"
-        transform="rotate(45 13 13)"
-        stroke="var(--color-gold)"
-        strokeWidth="1.6"
-      />
-      <circle cx="13" cy="13" r="3" fill="var(--color-npc)" />
-    </svg>
-  );
-}
+/* The brand mark lives in its own client module: it needs useId() for
+   document-unique gradient ids, and ui.tsx is imported by server components. */
+export { Mark } from "./Mark";
 
 type Variant = "gold" | "npc" | "ghost";
 
@@ -96,12 +81,16 @@ export function SectionHeading({
   title,
   lede,
   align = "left",
+  as = "h2",
 }: {
   eyebrow?: string;
   eyebrowTone?: "gold" | "npc";
   title: React.ReactNode;
   lede?: React.ReactNode;
   align?: "left" | "center";
+  /** Every page needs exactly one h1. Section headings default to h2; a page
+   *  whose primary heading IS a SectionHeading passes as="h1". */
+  as?: "h1" | "h2";
 }) {
   return (
     <div className={`max-w-2xl ${align === "center" ? "mx-auto text-center" : ""}`}>
@@ -111,7 +100,7 @@ export function SectionHeading({
         </div>
       )}
       <SplitReveal
-        as="h2"
+        as={as}
         className="font-display text-3xl font-bold leading-[1.15] tracking-tight text-snow sm:text-4xl md:text-[2.75rem]"
       >
         {title}

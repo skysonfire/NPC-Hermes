@@ -5,6 +5,12 @@
     "Segoe UI", Roboto, Arial, sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, "SF Mono", Menlo,
     Consolas, monospace;
+  /* Unbounded is loaded in layout.tsx as --font-unbounded, but Tailwind v4
+     only emits a `font-display` utility if the theme declares the family.
+     Without this line every `font-display` class on the site is inert and the
+     display face never renders. */
+  --font-display: var(--font-unbounded), var(--font-inter), ui-sans-serif,
+    system-ui, sans-serif;
 
   /* ===== COLOR TOKENS =====
      Indigo base · ember-coral = the player (warm) · azure = the NPC (cool)
@@ -550,4 +556,375 @@ html.motion-on [data-reveal].is-revealed {
   .split-line {
     will-change: transform;
   }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   LIQUID GLASS — the pointer-reactive tier
+   ═══════════════════════════════════════════════════════════════════════
+   `.glass` above is a static sheet: blur, a specular lip, a fixed diagonal
+   sheen. It reads as glass, but as a *photograph* of glass — nothing on it
+   ever moves, so the eye stops believing it after a second.
+
+   What makes real glass read as liquid is that the highlight tracks the light
+   source. Here the light source is the cursor. Two elements per surface:
+
+     ::before — a broad specular bloom that follows the pointer across the
+                face, blended additively so it brightens rather than washes.
+     ::after  — a 1px gradient RIM, brightest where the pointer is nearest,
+                built with the mask-composite trick so the gradient lives in
+                the border itself rather than a fake inset box.
+
+   Both pseudo-elements read --mx/--my (CSS px, relative to the element),
+   written by the LiquidGlass wrapper on pointermove. Until JS runs they
+   default to the top-left-ish rest position, so a no-JS surface still looks
+   deliberately lit rather than broken.
+
+   COST: --mx/--my only ever feed gradient positions, so a pointermove
+   repaints one composited layer. No layout, no style recalc on children.
+   ─────────────────────────────────────────────────────────────────────── */
+
+@layer components {
+  .glass-liquid {
+    position: relative;
+    isolation: isolate;
+    --mx: 30%;
+    --my: 0%;
+    --liquid-glow: 0;
+
+    background-color: color-mix(in srgb, var(--color-panel) 55%, transparent);
+    -webkit-backdrop-filter: blur(22px) saturate(175%);
+    backdrop-filter: blur(22px) saturate(175%);
+    border: 1px solid transparent;
+    box-shadow:
+      inset 0 1px 0 0 color-mix(in srgb, #ffffff 14%, transparent),
+      inset 0 -1px 0 0 color-mix(in srgb, #ffffff 5%, transparent),
+      0 24px 60px -32px color-mix(in srgb, #000000 78%, transparent);
+  }
+
+  /* Specular bloom — the moving highlight. */
+  .glass-liquid::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+    background: radial-gradient(
+      260px 200px at var(--mx) var(--my),
+      color-mix(in srgb, #ffffff 16%, transparent) 0%,
+      color-mix(in srgb, var(--color-gold) 7%, transparent) 38%,
+      transparent 72%
+    );
+    opacity: calc(0.55 + 0.45 * var(--liquid-glow));
+    transition: opacity 400ms ease;
+  }
+
+  /* Refractive rim. The gradient lives IN the 1px border via mask-composite —
+     an inset box-shadow cannot do a directional gradient edge. */
+  .glass-liquid::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+    padding: 1px;
+    background:
+      radial-gradient(
+        180px 180px at var(--mx) var(--my),
+        color-mix(in srgb, #ffffff 62%, transparent) 0%,
+        transparent 68%
+      ),
+      linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--color-gold) 34%, transparent) 0%,
+        color-mix(in srgb, var(--color-line-2) 55%, transparent) 42%,
+        color-mix(in srgb, var(--color-line-2) 40%, transparent) 62%,
+        color-mix(in srgb, var(--color-npc) 30%, transparent) 100%
+      );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+  }
+
+  /* Pill variant for controls. */
+  .glass-liquid--pill {
+    border-radius: 999px;
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+    backdrop-filter: blur(14px) saturate(160%);
+  }
+
+  /* Same degradation contract as `.glass`: on a mid-range phone the blur is
+     the single most expensive thing on screen, and anyone who has asked for
+     less transparency gets an opaque panel instead of guesswork. */
+  @media (max-width: 767px) {
+    .glass-liquid {
+      -webkit-backdrop-filter: blur(12px) saturate(150%);
+      backdrop-filter: blur(12px) saturate(150%);
+    }
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    .glass-liquid {
+      background-color: var(--color-panel);
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
+    .glass-liquid::before {
+      display: none;
+    }
+  }
+
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .glass-liquid {
+      background-color: color-mix(in srgb, var(--color-panel) 93%, transparent);
+    }
+  }
+}
+
+/* ── Hero-specific ─────────────────────────────────────────── */
+
+/* The mutating word. A fixed min-width would jitter the line as the scramble
+   changes length, so instead the span is inline-block with a tabular-ish feel
+   and the line simply grows to the right — motion that reads as intentional. */
+.swap-word {
+  display: inline-block;
+  will-change: contents;
+}
+
+/* Vignette that keeps the crowd field off the page edges. */
+.hero-vignette {
+  background: radial-gradient(
+    125% 95% at 68% 42%,
+    transparent 48%,
+    color-mix(in srgb, var(--color-ink) 62%, transparent) 100%
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   THE MARK BOBS
+   ═══════════════════════════════════════════════════════════════════════
+   The brand mark is a marker that hovers above a character's head, so it
+   hovers. This is not decoration — it is the single cheapest way to stop the
+   silhouette reading as a download arrow. Arrows point; they do not float.
+
+   Transform-only, so it composites on the GPU and never touches layout or
+   triggers a paint. Amplitude and period are custom properties, because a
+   30px mark in fixed navigation needs a far smaller travel than a display
+   mark in a footer — same animation, tuned per site.
+
+   The nav mark is on screen on every page, permanently, in peripheral
+   vision. Keep --bob-y small there. Motion that reads as "alive" at 2px
+   reads as "distracting" at 6px when you are trying to read the page behind
+   it.
+   ─────────────────────────────────────────────────────────────────────── */
+
+@keyframes mark-bob {
+  0%,
+  100% {
+    transform: translate3d(0, calc(var(--bob-y, 3px) * -1), 0);
+  }
+  50% {
+    transform: translate3d(0, var(--bob-y, 3px), 0);
+  }
+}
+
+.mark-bob {
+  animation: mark-bob var(--bob-dur, 4s) ease-in-out infinite;
+  will-change: transform;
+}
+
+/* A hovering logo is exactly the kind of ambient motion reduced-motion users
+   are asking to be spared. It rests at its centre position, never mid-travel. */
+@media (prefers-reduced-motion: reduce) {
+  .mark-bob {
+    animation: none;
+    transform: none;
+    will-change: auto;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   PROSE — rendered markdown for blog posts
+   ═══════════════════════════════════════════════════════════════════════
+   Written by hand rather than pulling in @tailwindcss/typography. The plugin
+   ships opinions about a dozen elements we do not use and would then need
+   overriding back to the brand tokens; this is smaller than the override
+   layer would have been.
+
+   Measure is the point. Body copy sits at ~68 characters via the article's
+   max-w-3xl, and everything below is tuned for reading a screen of text
+   rather than scanning a marketing section.
+   ─────────────────────────────────────────────────────────────────────── */
+
+.prose-npc {
+  color: var(--color-fog);
+  font-size: 1.0625rem;
+  line-height: 1.75;
+}
+
+.prose-npc > * + * {
+  margin-top: 1.35em;
+}
+
+.prose-npc h2,
+.prose-npc h3,
+.prose-npc h4 {
+  font-family: var(--font-display);
+  color: var(--color-snow);
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.prose-npc h2 {
+  font-size: 1.65rem;
+  font-weight: 700;
+  margin-top: 2.6em;
+  margin-bottom: -0.35em;
+}
+
+/* A hairline above every H2 gives long posts a scannable rhythm without
+   needing a table of contents. */
+.prose-npc h2::before {
+  content: "";
+  display: block;
+  width: 2.5rem;
+  height: 2px;
+  margin-bottom: 0.85rem;
+  background: var(--color-gold);
+  opacity: 0.65;
+}
+
+.prose-npc h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 2em;
+  margin-bottom: -0.4em;
+}
+
+.prose-npc strong {
+  color: var(--color-snow);
+  font-weight: 600;
+}
+
+.prose-npc a {
+  color: var(--color-gold);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  text-decoration-color: color-mix(in srgb, var(--color-gold) 45%, transparent);
+  transition: text-decoration-color 160ms ease;
+}
+.prose-npc a:hover {
+  text-decoration-color: var(--color-gold);
+}
+
+.prose-npc ul,
+.prose-npc ol {
+  padding-left: 1.35rem;
+}
+.prose-npc ul {
+  list-style: none;
+  padding-left: 0;
+}
+.prose-npc ul > li {
+  position: relative;
+  padding-left: 1.5rem;
+}
+/* The brand's diamond node, reused as the bullet. */
+.prose-npc ul > li::before {
+  content: "";
+  position: absolute;
+  left: 0.15rem;
+  top: 0.72em;
+  width: 5px;
+  height: 5px;
+  transform: rotate(45deg);
+  background: var(--color-gold);
+  opacity: 0.75;
+}
+.prose-npc ol {
+  list-style: decimal;
+}
+.prose-npc ol::marker,
+.prose-npc li::marker {
+  color: var(--color-fog-2);
+}
+.prose-npc li + li {
+  margin-top: 0.5em;
+}
+
+.prose-npc blockquote {
+  border-left: 2px solid color-mix(in srgb, var(--color-gold) 45%, transparent);
+  padding-left: 1.25rem;
+  color: var(--color-snow);
+  font-style: normal;
+}
+
+.prose-npc code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  color: var(--color-gold-soft);
+  background: color-mix(in srgb, var(--color-panel-2) 70%, transparent);
+  border: 1px solid var(--color-line);
+  border-radius: 5px;
+  padding: 0.12em 0.4em;
+}
+
+.prose-npc pre {
+  background: color-mix(in srgb, var(--color-ink) 70%, transparent);
+  border: 1px solid var(--color-line);
+  border-radius: 12px;
+  padding: 1.1rem 1.25rem;
+  /* Long lines scroll inside the block; the page itself must never scroll
+     sideways because of a code sample. */
+  overflow-x: auto;
+}
+.prose-npc pre code {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--color-snow);
+  font-size: 0.85em;
+}
+
+.prose-npc hr {
+  border: 0;
+  height: 1px;
+  background: var(--color-line);
+  margin-block: 2.75em;
+}
+
+/* Tables scroll in their own container rather than breaking the layout. */
+.prose-npc table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.94em;
+  display: block;
+  overflow-x: auto;
+}
+.prose-npc th,
+.prose-npc td {
+  border-bottom: 1px solid var(--color-line);
+  padding: 0.65rem 0.9rem;
+  text-align: left;
+  white-space: nowrap;
+}
+.prose-npc th {
+  color: var(--color-snow);
+  font-family: var(--font-mono);
+  font-size: 0.8em;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 500;
+}
+
+.prose-npc img {
+  border-radius: 12px;
+  border: 1px solid var(--color-line);
 }

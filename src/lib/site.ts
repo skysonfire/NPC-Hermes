@@ -23,7 +23,7 @@ export const site = {
   tagline: "Stop Being a Background Character",
 
   description:
-    "Fixed-price, story-driven websites with an AI voice front desk — live in days, and wired to turn visitors into qualified leads.",
+    "A custom site, an AI receptionist that answers every call, and a lead system that sends qualified enquiries to your CRM. Fixed price, live in days.",
 
   /** Used for OpenGraph/Twitter cards. 1200x630. */
   ogImage: `${siteUrl}/og.png`,

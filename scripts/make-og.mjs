@@ -16,12 +16,76 @@ const FOG = "#928fae";
 const GOLD = "#ff8a5c";
 const NPC = "#56b6ff";
 
-const mark = (size, stroke, core) => `
-<svg width="${size}" height="${size}" viewBox="0 0 26 26" fill="none">
-  <rect x="6.5" y="6.5" width="13" height="13" rx="2" transform="rotate(45 13 13)"
-        stroke="${stroke}" stroke-width="1.6"/>
-  <circle cx="13" cy="13" r="3" fill="${core}"/>
+/**
+ * The brand mark — a fibre-optic waypoint marker.
+ *
+ * KEEP IN SYNC with src/components/Mark.tsx. This file cannot import the React
+ * component (it renders standalone HTML through Playwright), so the path data
+ * is duplicated here on purpose. If the geometry moves in one place it must
+ * move in both, or the OG card and the site will show different logos.
+ *
+ * `size` is the rendered WIDTH; height follows the 260:143 viewBox.
+ * The `_stroke`/`_core` params are kept so existing call sites don't change.
+ */
+const MARK_D = "M13.26 55 L130 170 L246.74 55 L203.94 55 L130 127.86 L56.06 55 Z";
+
+const mark = (size, _stroke, _core) => {
+  const h = Math.round(size * (143 / 260));
+  const u = `m${size}`;
+  // Full tier above 44px, otherwise the simplified rim-only cut.
+  const full = size >= 44;
+  return `
+<svg width="${size}" height="${h}" viewBox="0 41 260 143" fill="none">
+  <defs>
+    <clipPath id="c${u}"><path d="${MARK_D}"/></clipPath>
+    <linearGradient id="r${u}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffab5e"/>
+      <stop offset="42%" stop-color="#ff7a1a"/>
+      <stop offset="100%" stop-color="#ffa348"/>
+    </linearGradient>
+    <linearGradient id="b${u}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ff7a1a" stop-opacity=".05"/>
+      <stop offset="70%" stop-color="#ff8c2a" stop-opacity=".11"/>
+      <stop offset="100%" stop-color="#ffa54f" stop-opacity=".2"/>
+    </linearGradient>
+    <radialGradient id="h${u}" cx="50%" cy="86%" r="38%">
+      <stop offset="0%" stop-color="#ffe9cf" stop-opacity=".8"/>
+      <stop offset="24%" stop-color="#ffa855" stop-opacity=".45"/>
+      <stop offset="100%" stop-color="#ff7a1a" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="g${u}" x="-45%" y="-45%" width="190%" height="190%">
+      <feGaussianBlur stdDeviation="4.2"/>
+    </filter>
+  </defs>
+  <g filter="url(#g${u})" opacity=".42">
+    <path d="${MARK_D}" fill="none" stroke="#ff7212" stroke-width="4.5"/>
+  </g>
+  <path d="${MARK_D}" fill="url(#b${u})"/>
+  ${full ? fibres(u) : ""}
+  <g clip-path="url(#c${u})"><ellipse cx="130" cy="156" rx="30" ry="26" fill="url(#h${u})"/></g>
+  <path d="${MARK_D}" fill="none" stroke="url(#r${u})" stroke-width="${full ? 2.8 : 6}" stroke-linejoin="round"/>
+  <path d="${MARK_D}" fill="none" stroke="#ffcb96" stroke-width="${full ? 0.8 : 1.3}" stroke-linejoin="round" opacity="${full ? 0.7 : 0.65}"/>
 </svg>`;
+};
+
+/** The fibre bundle. Same generator as the React component, same constants. */
+function fibres(u) {
+  const CX = 130, TIPY = 170, TOPY = 55, OUTX = 13.26, INX = 56.06;
+  let out = "";
+  for (const side of [-1, 1]) {
+    for (let i = 0; i < 35; i++) {
+      const t = i / 34;
+      let ex, ey;
+      if (t < 0.6) { const uu = t / 0.6; ex = INX + (OUTX - INX) * uu; ey = TOPY; }
+      else { const v = ((t - 0.6) / 0.4) * 0.55; ex = OUTX + (CX - OUTX) * v; ey = TOPY + (TIPY - TOPY) * v; }
+      if (side > 0) ex = 2 * CX - ex;
+      const mx = (CX + ex) / 2 + -side * (3 + 11 * (1 - t));
+      const my = (163 + ey) / 2 + 7;
+      out += `<path d="M${CX} 163 Q${mx.toFixed(1)} ${my.toFixed(1)} ${ex.toFixed(1)} ${ey.toFixed(1)}" fill="none" stroke="${i % 7 === 0 ? "#ffc48a" : "#ff8f3c"}" stroke-width="${(0.28 + 0.34 * (1 - t)).toFixed(2)}" opacity="${(0.14 + 0.42 * (1 - t * 0.7)).toFixed(2)}"/>`;
+    }
+  }
+  return `<g clip-path="url(#c${u})">${out}</g>`;
+}
 
 const shell = (body, w, h) => `<!doctype html><html><head><meta charset="utf-8">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -54,22 +118,22 @@ const ogBody = `
 
   <div style="margin:auto 0">
     <div style="font-family:'JetBrains Mono',monospace;font-size:16px;letter-spacing:.34em;
-                text-transform:uppercase;color:${NPC};display:flex;align-items:center;gap:12px;margin-bottom:22px">
-      <span style="width:8px;height:8px;border-radius:50%;background:${NPC};display:inline-block"></span>
-      Default state
+                text-transform:uppercase;color:${GOLD};display:flex;align-items:center;gap:12px;margin-bottom:22px">
+      <span style="width:8px;height:8px;border-radius:50%;background:${GOLD};display:inline-block"></span>
+      Site · Voice · Retainer
     </div>
     <div style="font-size:70px;font-weight:700;line-height:1.06;letter-spacing:-.03em;max-width:1000px">
-      Stop being a<br><span style="color:${NPC}">background character.</span>
+      You&rsquo;re<br><span style="color:${GOLD}">the main character.</span>
     </div>
     <div style="font-size:23px;line-height:1.5;color:${FOG};margin-top:26px;max-width:860px;
                 font-family:system-ui,sans-serif">
-      Fixed-price websites with an AI voice front desk — live in days,
-      wired to turn visitors into qualified leads.
+      A custom site, an AI receptionist that answers every call, and leads
+      that arrive already qualified. Fixed price, live in days.
     </div>
   </div>
 
   <div style="display:flex;gap:14px;font-family:'JetBrains Mono',monospace;font-size:15px">
-    ${["FIXED PRICE", "DAYS, NOT WEEKS", "NO TEMPLATES"]
+    ${["FIXED PRICE", "LIVE IN DAYS", "EVERY CALL ANSWERED"]
       .map(
         (t) =>
           `<span style="border:1px solid ${LINE};background:${PANEL}cc;border-radius:999px;

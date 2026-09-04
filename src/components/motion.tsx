@@ -371,8 +371,18 @@ export function SplitReveal({
 
       // Failsafe, same principle as the reveal watchdog: if the observer never
       // fires (hidden tab, throttled renderer), show the text anyway.
+      //
+      // A tween that EXISTS is not a tween that RAN. The previous check bailed
+      // whenever `tween` was truthy, which covers the case this failsafe is
+      // for: the observer fires, a tween is created, and only then does the
+      // GSAP ticker stall — a tab backgrounded mid-load, a blocked main
+      // thread, lagSmoothing crawling on a slow device. The tween sits at
+      // progress 0, the lines stay parked at yPercent 115 / opacity 0, and the
+      // watchdog declines to help because a tween object is present. The
+      // heading is then invisible permanently. Check progress, not existence.
       const t = window.setTimeout(() => {
-        if (tween) return;
+        if (tween && tween.progress() === 1) return;
+        tween?.kill();
         gsap.set(lines, { yPercent: 0, opacity: 1 });
       }, REVEAL_DEADLINE_MS);
 
