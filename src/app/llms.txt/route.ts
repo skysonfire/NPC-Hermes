@@ -69,6 +69,8 @@ slow follow-up, or a website that looks like every competitor's.
 ## Pages
 
 - [Home](${siteUrl}/): the offer and how the pieces fit together.
+- [AI search visibility](${siteUrl}/ai-visibility): the AEO/GEO audit — what it
+  checks, the method, and what we refuse to guarantee.
 - [The Protocol](${siteUrl}/protocol): the four-stage engagement method —
   Read, Cast, Stage, Open.
 - [The Engine](${siteUrl}/roadmap): how site, voice and follow-up combine into

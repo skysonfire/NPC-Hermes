@@ -9,6 +9,7 @@ const links = [
   { href: "/protocol", label: "The Protocol" },
   { href: "/#work", label: "Work" },
   { href: "/sarah", label: "Sarah" },
+  { href: "/ai-visibility", label: "AI visibility" },
   { href: "/roadmap", label: "The Engine" },
   { href: "/blog", label: "Field notes" },
   { href: "/contact", label: "Contact" },
