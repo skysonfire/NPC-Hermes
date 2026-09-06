@@ -122,7 +122,11 @@ export function contractingParty(): string {
     // Accurate for a sole trader: the human is the party, the brand is a name.
     return `${entity.principalName}, trading as ${entity.tradingName}`;
   }
-  return `[NO CONTRACTING ENTITY SET — see src/lib/site.ts. This agreement cannot be executed until a legal party is named.]`;
+  // Reaching here means the agreement cannot be executed. The marker must be
+  // obvious to us and not embarrassing in public, so it names the defect
+  // without naming a source file: an internal path printed where a
+  // counterparty reads is worse than the gap it reports.
+  return `[Provider entity pending — this agreement is not yet capable of execution]`;
 }
 
 export function entityLine(): string {

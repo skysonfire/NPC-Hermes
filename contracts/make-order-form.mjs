@@ -21,7 +21,7 @@
  * in it is worse than no contract — it is evidence that nobody read it.
  */
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
-import { join, dirname, basename } from "node:path";
+import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -34,6 +34,49 @@ if (!configPath) {
 }
 
 const cfg = JSON.parse(readFileSync(configPath, "utf8"));
+
+/**
+ * The Provider comes from src/lib/site.ts — the same entity block the MSA
+ * renders — parsed rather than imported because this is a plain script and
+ * site.ts is TypeScript. If the entity is not registered and no principal is
+ * named, there is no party to contract as and generation stops.
+ */
+const siteTs = readFileSync(join(HERE, "..", "src", "lib", "site.ts"), "utf8");
+/**
+ * Pull a quoted value out of the `entity` block in site.ts.
+ *
+ * Plain string scanning rather than a regex: the first version built the
+ * pattern inside a template literal, where JS collapses \s to a literal "s",
+ * so it silently matched nothing and the generator refused every run for the
+ * wrong reason. Scoped to the entity block so a usage elsewhere in the file
+ * cannot be read as the definition.
+ */
+const entityBlock = (() => {
+  const i = siteTs.indexOf("export const entity");
+  return i < 0 ? siteTs : siteTs.slice(i);
+})();
+const QUOTE = String.fromCharCode(34);
+const field = (name) => {
+  const i = entityBlock.indexOf(name + ":");
+  if (i < 0) return "";
+  const a = entityBlock.indexOf(QUOTE, i);
+  const b = entityBlock.indexOf(QUOTE, a + 1);
+  return a < 0 || b < 0 ? "" : entityBlock.slice(a + 1, b);
+};
+const registered = entityBlock.includes("registered: true");
+const provider = {
+  legalName: registered ? field("legalName") : (field("principalName") ? `${field("principalName")}, trading as ${field("tradingName")}` : ""),
+  address: registered ? field("address") : field("jurisdiction"),
+  signatory: field("principalName"),
+  title: registered ? "Director" : "Proprietor",
+};
+if (!provider.legalName || !provider.signatory) {
+  console.error("REFUSING TO GENERATE — no contracting party.\n");
+  console.error("  src/lib/site.ts has no registered entity and no principalName.");
+  console.error("  An Order Form cannot name a Provider that does not exist.");
+  console.error("  Register the company, or set entity.principalName.");
+  process.exit(1);
+}
 const template = readFileSync(join(HERE, "ORDER-FORM-TEMPLATE.md"), "utf8");
 
 /* ── money + dates, formatted once, consistently ─────────────────────────── */
@@ -71,10 +114,14 @@ const values = {
   DATE: dateLong,
   SITE_URL: cfg.siteUrl || "https://npcprotocol.com",
 
-  PROVIDER_LEGAL_NAME: cfg.provider?.legalName,
-  PROVIDER_ADDRESS: cfg.provider?.address,
-  PROVIDER_SIGNATORY: cfg.provider?.signatory,
-  PROVIDER_TITLE: cfg.provider?.title,
+  // Read from src/lib/site.ts, never from the client JSON. A per-client
+  // provider field let a smoke test print a fictitious London company into a
+  // signable contract, and no string check can distinguish a plausible fake
+  // from a real registered entity. One source of truth, shared with the MSA.
+  PROVIDER_LEGAL_NAME: provider.legalName,
+  PROVIDER_ADDRESS: provider.address,
+  PROVIDER_SIGNATORY: provider.signatory,
+  PROVIDER_TITLE: provider.title,
 
   CLIENT_LEGAL_NAME: cfg.client?.legalName,
   CLIENT_COMPANY_NO: cfg.client?.companyNumber,

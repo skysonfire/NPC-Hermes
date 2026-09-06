@@ -64,7 +64,7 @@ const clauses: Clause[] = [
   },
   {
     t: "Annex A — Subprocessors (general authorisation)",
-    b: "The following categories of subprocessors are authorised for the service. Provider does not publish vendor names on public pages; the exact subprocessors and their locations are provided to Client in the Order Form or on request. (1) A third-party AI voice platform — call handling and speech-to-text — [region]. (2) A telephony service — phone numbers and call routing — [region]. (3) A language-model provider — text generation and lead scoring — [region]. (4) A hosting provider — site and service hosting — [region]. Each is bound to equivalent data-protection obligations by contract.",
+    b: "The following categories of subprocessors are authorised for the service. Provider does not publish vendor names on public pages; the exact subprocessors, and the countries in which they process personal data, are identified to Client in the Order Form or on written request. (1) A third-party AI voice platform — call handling and speech-to-text. (2) A telephony service — phone numbers and call routing. (3) A messaging service — sending and receiving SMS, including the missed-call callback, and the caller numbers and message content that involves. (4) A language-model provider — text generation and lead scoring. (5) A hosting provider — site and service hosting. Each is bound to equivalent data-protection obligations by contract. This list matches the categories Provider is permitted to engage under clause 15 of the MSA.",
   },
   {
     t: "Annex B — Technical and organisational measures",

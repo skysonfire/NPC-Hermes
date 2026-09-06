@@ -38,7 +38,7 @@ Three options, and this is a question for a solicitor, not for me:
 1. **UAE law throughout.** Simplest for you, hardest to sell, and practically
    unenforceable for a £10k dispute — nobody flies to Dubai over that.
 2. **England and Wales for UK clients.** Easier sale, and the Order Form can
-   override the MSA (clause 16 already permits "unless an Order Form sets a
+   override the MSA (clause 20 already permits "unless an Order Form sets a
    different law or forum"). The mechanism is already there.
 3. **Split**: UAE as the default, England and Wales named in every UK Order
    Form. Probably where you land.

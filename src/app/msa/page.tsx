@@ -76,7 +76,7 @@ const clauses: Clause[] = [
   },
   {
     t: "16. Insurance",
-    b: "Provider maintains professional indemnity insurance appropriate to the value and nature of the services, and will provide evidence of cover on written request, no more than once a year. Provider will tell Client without undue delay if that cover lapses or is materially reduced during an active engagement. Nothing in this clause increases the liability caps in clause 12.",
+    b: "Provider maintains professional indemnity insurance with a limit of indemnity of not less than the amount stated in the Order Form, or £250,000 in the aggregate where the Order Form is silent, for the duration of each engagement and for twelve (12) months after it ends. Provider will provide evidence of that cover on written request, no more than twice a year, and will tell Client without undue delay if the cover lapses, is cancelled, or falls below that limit. Nothing in this clause increases the liability caps in clause 10.",
   },
   {
     t: "17. Non-solicitation",
@@ -84,7 +84,7 @@ const clauses: Clause[] = [
   },
   {
     t: "18. Resolving disputes",
-    b: "If a dispute arises, the parties will first try to resolve it directly: the party raising it sends a written summary, and both sides make a good-faith attempt to settle it within fourteen (14) days. If that fails, the parties will attempt mediation with a mutually agreed mediator before starting proceedings. Neither step prevents a party from seeking urgent injunctive relief, or from pursuing a genuinely undisputed debt. This clause exists because litigating a dispute of this size across borders costs both sides more than the dispute is worth.",
+    b: "If a dispute arises, the parties will first try to resolve it directly: the party raising it sends a written summary, and both sides make a good-faith attempt to settle it within fourteen (14) days. If that fails, the parties will attempt mediation. If they have not agreed a mediator within fourteen (14) days of either party requesting mediation, either party may ask a recognised mediation body to appoint one, and that appointment binds both. Mediation is treated as concluded, and proceedings may begin, once the earlier of a settlement, a mediator's declaration that the matter will not settle, or forty-two (42) days from the request has occurred. Neither step prevents a party from seeking urgent injunctive relief, from pursuing a debt that is not genuinely disputed, or from exercising the suspension rights in clauses 3 and 13, none of which are conditioned on this clause. This exists because litigating a dispute of this size across borders costs both sides more than the dispute is worth.",
   },
   {
     t: "19. Force majeure",
@@ -92,7 +92,7 @@ const clauses: Clause[] = [
   },
   {
     t: "20. General",
-    b: `The parties are independent contractors; nothing here creates a partnership, agency, or employment. Neither party may assign this MSA without the other’s consent, except to a successor in a merger or sale of substantially all assets. If any provision is unenforceable, the rest stands and the parties replace it with the closest enforceable term. This MSA, its Order Forms, the DPA, the AI Voice Services Schedule, and the privacy and terms pages are the whole agreement on their subject matter and replace earlier ones. Changes must be in writing. Notices go to the email addresses in the Order Form or ${site.email}. This MSA is governed by the laws of ${entity.country}, with disputes subject to ${entity.courts}. Where Client is established in the United Kingdom, the Order Form will specify the laws of England and Wales and the exclusive jurisdiction of the courts of England and Wales, and that choice prevails over this clause for that engagement. This MSA is a commercial draft for the parties to adopt and have reviewed by their own counsel before signature.`,
+    b: `The parties are independent contractors; nothing here creates a partnership, agency, or employment. Neither party may assign this MSA without the other’s consent, except to a successor in a merger or sale of substantially all assets. If any provision is unenforceable, the rest stands and the parties replace it with the closest enforceable term. This MSA, its Order Forms, the DPA, the AI Voice Services Schedule, and the privacy and terms pages are the whole agreement on their subject matter and replace earlier ones. Changes must be in writing. Notices go to the email addresses in the Order Form or ${site.email}. This MSA is governed by the laws of ${entity.country}, with disputes subject to ${entity.courts}, unless an Order Form sets a different law or forum. This MSA is a commercial draft for the parties to adopt and have reviewed by their own counsel before signature.`,
   },
 ];
 
