@@ -56,6 +56,18 @@ export const entity = {
   /** Trading name, always safe to show. */
   tradingName: "NPC Protocol",
 
+  /**
+   * The individual who contracts while `registered` is false.
+   *
+   * A trading name is not a legal person. Until the company exists, the party
+   * to every contract is a human being, and the contract has to say so — "NPC
+   * Protocol" alone leaves the counterparty undefined and, in practice, means
+   * personal liability without personal identification. Fill this in, or
+   * register the company. Leaving both empty is the one option that is
+   * actually dangerous.
+   */
+  principalName: "",
+
   /** Full registered legal name, e.g. "NPC Protocol FZ-LLC". */
   legalName: "",
 
@@ -85,6 +97,34 @@ export const entityComplete = Boolean(
  * One-line entity descriptor used across legal pages.
  * Degrades gracefully as details are filled in.
  */
+/**
+ * The Provider as a NAMED PARTY to an agreement.
+ *
+ * Deliberately different from entityLine(). On a marketing page, degrading to
+ * the trading name is correct — it says less rather than something untrue. In
+ * a contract that same degradation is the failure: "NPC Protocol" reads like a
+ * finished answer while identifying nobody, so the counterparty cannot tell
+ * who they are contracting with and the drafter cannot tell that anything is
+ * missing.
+ *
+ * So this returns a legally accurate description in every state, and an
+ * unmistakable marker when it cannot.
+ */
+export function contractingParty(): string {
+  if (entity.registered && entity.legalName) {
+    const bits: string[] = [entity.legalName];
+    if (entity.licenceNumber) bits.push(`licence no. ${entity.licenceNumber}`);
+    bits.push(`registered in ${entity.jurisdiction}`);
+    if (entity.address) bits.push(entity.address);
+    return bits.join(", ");
+  }
+  if (entity.principalName) {
+    // Accurate for a sole trader: the human is the party, the brand is a name.
+    return `${entity.principalName}, trading as ${entity.tradingName}`;
+  }
+  return `[NO CONTRACTING ENTITY SET — see src/lib/site.ts. This agreement cannot be executed until a legal party is named.]`;
+}
+
 export function entityLine(): string {
   // Until the company exists, say only the name. No "registered in", no
   // jurisdiction, no address -- none of it is true yet.

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { site, entity, entityLine } from "@/lib/site";
+import { site, entity, contractingParty } from "@/lib/site";
 import Link from "next/link";
 import PageHero from "@/components/PageHero";
 import { Section, Eyebrow } from "@/components/ui";
@@ -16,7 +16,7 @@ type Clause = { t: string; b: string; strong?: boolean };
 const clauses: Clause[] = [
   {
     t: "1. The parties and the services",
-    b: `This Master Services Agreement (“MSA”) is between ${entityLine()} (“Provider”) and the client named in the applicable Order Form (“Client”). Provider will deliver the design, build, AI voice, and AI-visibility services described in each Order Form. Each Order Form is part of this MSA and, where it differs, the Order Form controls for that engagement.`,
+    b: `This Master Services Agreement (“MSA”) is between ${contractingParty()} (“Provider”) and the client named in the applicable Order Form (“Client”). Provider will deliver the design, build, AI voice, and AI-visibility services described in each Order Form. Each Order Form is part of this MSA and, where it differs, the Order Form controls for that engagement.`,
   },
   {
     t: "2. Order Forms and statements of work",
@@ -71,12 +71,28 @@ const clauses: Clause[] = [
     b: "Where Provider processes personal data on Client’s behalf, the Data Processing Addendum applies and incorporates the UK GDPR and, where relevant, US state privacy obligations. For the AI voice front-desk, the AI Voice Services Schedule applies. Where Client is the controller of its customers’ data and Provider is the processor, the DPA sets the processor obligations, subprocessors, security, breach handling, and deletion.",
   },
   {
-    t: "15. Force majeure",
+    t: "15. Subcontracting",
+    b: "Provider may use subcontractors and third-party services to deliver the services, including hosting, telephony, messaging, and AI model providers. Provider remains responsible for the performance of anyone it engages, and for their compliance with this MSA, as if the work were its own. Where a subcontractor processes personal data, the Data Processing Addendum governs and the subprocessor terms in it apply. Client's rights and remedies under this MSA are unaffected by Provider's use of a subcontractor, and Client need not pursue a subcontractor directly.",
+  },
+  {
+    t: "16. Insurance",
+    b: "Provider maintains professional indemnity insurance appropriate to the value and nature of the services, and will provide evidence of cover on written request, no more than once a year. Provider will tell Client without undue delay if that cover lapses or is materially reduced during an active engagement. Nothing in this clause increases the liability caps in clause 12.",
+  },
+  {
+    t: "17. Non-solicitation",
+    b: "During an engagement and for twelve (12) months after it ends, neither party will knowingly solicit for employment any individual of the other who was directly involved in that engagement. This does not restrict general recruitment advertising not targeted at those individuals, and it does not prevent anyone responding to such advertising on their own initiative. This clause is intended to be no wider than is reasonable to protect each party's legitimate interests, and if a court finds any part of it too wide, that part applies as narrowly as needed to be enforceable.",
+  },
+  {
+    t: "18. Resolving disputes",
+    b: "If a dispute arises, the parties will first try to resolve it directly: the party raising it sends a written summary, and both sides make a good-faith attempt to settle it within fourteen (14) days. If that fails, the parties will attempt mediation with a mutually agreed mediator before starting proceedings. Neither step prevents a party from seeking urgent injunctive relief, or from pursuing a genuinely undisputed debt. This clause exists because litigating a dispute of this size across borders costs both sides more than the dispute is worth.",
+  },
+  {
+    t: "19. Force majeure",
     b: "Neither party is liable for a delay or failure caused by something outside its reasonable control — power or internet failure, a third-party provider outage, a legal or governmental order, a natural event, or the like — provided it uses reasonable efforts to resume and to tell the other party. A party in breach before the force-majeure event remains liable for that earlier breach.",
   },
   {
-    t: "16. General",
-    b: `The parties are independent contractors; nothing here creates a partnership, agency, or employment. Neither party may assign this MSA without the other’s consent, except to a successor in a merger or sale of substantially all assets. If any provision is unenforceable, the rest stands and the parties replace it with the closest enforceable term. This MSA, its Order Forms, the DPA, the AI Voice Services Schedule, and the privacy and terms pages are the whole agreement on their subject matter and replace earlier ones. Changes must be in writing. Notices go to the email addresses in the Order Form or ${site.email}. This MSA is governed by the laws of ${entity.country}, with disputes subject to ${entity.courts}, unless an Order Form sets a different law or forum. This MSA is a commercial draft for the parties to adopt and have reviewed by their own counsel before signature.`,
+    t: "20. General",
+    b: `The parties are independent contractors; nothing here creates a partnership, agency, or employment. Neither party may assign this MSA without the other’s consent, except to a successor in a merger or sale of substantially all assets. If any provision is unenforceable, the rest stands and the parties replace it with the closest enforceable term. This MSA, its Order Forms, the DPA, the AI Voice Services Schedule, and the privacy and terms pages are the whole agreement on their subject matter and replace earlier ones. Changes must be in writing. Notices go to the email addresses in the Order Form or ${site.email}. This MSA is governed by the laws of ${entity.country}, with disputes subject to ${entity.courts}. Where Client is established in the United Kingdom, the Order Form will specify the laws of England and Wales and the exclusive jurisdiction of the courts of England and Wales, and that choice prevails over this clause for that engagement. This MSA is a commercial draft for the parties to adopt and have reviewed by their own counsel before signature.`,
   },
 ];
 

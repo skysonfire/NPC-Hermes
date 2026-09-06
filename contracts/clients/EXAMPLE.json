@@ -1,0 +1,50 @@
+{
+  "orderRef": "NPC-2026-09-HOLMES",
+  "siteUrl": "https://npcprotocol.com",
+
+  "provider": {
+    "legalName": "FILL THIS IN — see NOTES-BEFORE-USE.md §1",
+    "address": "FILL THIS IN",
+    "signatory": "FILL THIS IN",
+    "title": "Director"
+  },
+
+  "client": {
+    "legalName": "Holmes Electrical Limited",
+    "companyNumber": "01234567",
+    "address": "1 Example Way, Oldbury, B69 0AA",
+    "tradingName": "Holmes Electrical",
+    "contactName": "A. Holmes",
+    "contactEmail": "a.holmes@example.co.uk",
+    "contactPhone": "0121 496 0000"
+  },
+
+  "services": {
+    "audit":    { "include": true, "fee": 1500, "days": 10, "competitors": 3 },
+    "build":    { "include": true, "fee": 2500, "deposit": 1250, "days": 10,
+                  "pages": ["Home", "Services", "Service areas", "About", "Contact"],
+                  "contactRoute": "web form plus click-to-call, delivered to the Client's email and mobile",
+                  "hosting": "the Client's own hosting account, provisioned by the Provider",
+                  "revisionRounds": 2,
+                  "copyScope": "editing and structuring the Client's own supplied copy",
+                  "bookingScope": "a link to the Client's existing booking tool, if any" },
+    "callback": { "include": true, "fee": 79, "allowance": 300, "overage": "6p", "quietHours": "08:00–21:00" },
+    "retainer": { "include": true, "fee": 421,
+                  "scope": "Up to 2 hours",
+                  "mentions": "Directory and listing submissions, up to 4 per month" }
+  },
+
+  "terms": {
+    "paymentDays": 14,
+    "initialTerm": "3 months",
+    "noticePeriod": "30 days'",
+    "startDate": "1 October 2026",
+    "acceptanceDays": 5,
+    "materialsDays": 5
+  },
+
+  "assumptions": [
+    "The Client's existing domain is transferable and under the Client's control.",
+    "Call forwarding is available on the Client's current mobile tariff."
+  ]
+}
